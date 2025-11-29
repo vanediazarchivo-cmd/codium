@@ -34,8 +34,10 @@ export class LoginUseCase {
 
     const accessToken = await this.jwtService.sign(payload);
 
+    // Devolver tanto camelCase como snake_case para máxima compatibilidad
     return {
       accessToken,
+      access_token: accessToken,
       user: {
         id: user.id,
         email: user.email,

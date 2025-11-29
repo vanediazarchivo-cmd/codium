@@ -263,6 +263,8 @@ async function main() {
 
   console.log("✨ Database seeded successfully!");
 
+}
+
 main()
   .catch((e) => {
     console.error("❌ Error seeding database:", e);

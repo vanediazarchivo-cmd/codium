@@ -82,13 +82,19 @@ export class ApiClient {
 
 // Auth APIs
 export const authApi = {
-  login: (email: string, password: string) =>
-    ApiClient.post("/auth/login", { email, password }),
-  register: (firstName: string, lastName: string, email: string, password: string, role: string) =>
-    ApiClient.post("/auth/register", { firstName, lastName, email, password, role }),
-  getCurrentUser: () => ApiClient.get("/auth/me"),
+  // Acepta un payload { email, password } o (email, password)
+  login: (...args: any[]) => {
+    const payload = args[0]
+    if (typeof payload === 'object') return ApiClient.post('/auth/login', payload)
+    const email = args[0]
+    const password = args[1]
+    return ApiClient.post('/auth/login', { email, password })
+  },
+  // Registro: acepta un objeto con campos { firstName, lastName, email, password, role }
+  register: (payload: any) => ApiClient.post('/auth/register', payload),
+  getCurrentUser: () => ApiClient.get('/auth/me'),
   // Alias `me` para compatibilidad con hooks existentes
-  me: () => ApiClient.get("/auth/me"),
+  me: () => ApiClient.get('/auth/me'),
 }
 
 // Courses APIs

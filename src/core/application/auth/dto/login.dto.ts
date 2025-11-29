@@ -24,6 +24,8 @@ export class LoginDto {
 
 export interface LoginResponse {
   accessToken: string;
+  // Alias en snake_case para compatibilidad con frontend
+  access_token?: string;
   user: {
     id: string;
     email: string;
