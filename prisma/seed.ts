@@ -20,23 +20,23 @@ async function main() {
   await prisma.user.deleteMany({});
 
   // Create users
-  const adminPassword = await bcrypt.hash("admin123", 10);
-  const admin = await prisma.user.create({
-    data: {
-      email: "admin@codium.com",
-      password: adminPassword,
-      firstName: "Admin",
-      lastName: "User",
-      role: "ADMIN",
-    },
-  });
-
   const professorPassword = await bcrypt.hash("professor123", 10);
   const professor = await prisma.user.create({
     data: {
       email: "professor@codium.com",
       password: professorPassword,
       firstName: "Juan",
+      lastName: "Profesor",
+      role: "PROFESSOR",
+    },
+  });
+
+  // Crear un segundo profesor que antes era el 'admin'
+  const professor2 = await prisma.user.create({
+    data: {
+      email: "professor2@codium.com",
+      password: professorPassword,
+      firstName: "Admin",
       lastName: "Profesor",
       role: "PROFESSOR",
     },
@@ -63,12 +63,12 @@ async function main() {
     },
   });
 
-  const student2 = await prisma.user.create({
+  const student3 = await prisma.user.create({
     data: {
-      email: "student2@codium.com",
+      email: "student3@codium.com",
       password: studentPassword,
-      firstName: "María",
-      lastName: "López",
+      firstName: "Ana",
+      lastName: "Gómez",
       role: "STUDENT",
     },
   });
