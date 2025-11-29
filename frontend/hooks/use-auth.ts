@@ -7,8 +7,10 @@ interface User {
   email: string
   firstName: string
   lastName: string
-  role: "STUDENT" | "PROFESSOR" | "ADMIN"
+  role: "STUDENT" | "PROFESSOR"
 }
+// Nota: el rol ADMIN fue removido; solo STUDENT y PROFESSOR existen
+// Mantener compatibilidad con el frontend como fuente de la verdad.
 
 export function useAuth() {
   const router = useRouter()
