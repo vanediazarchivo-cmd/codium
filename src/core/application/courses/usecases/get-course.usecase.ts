@@ -15,7 +15,7 @@ export class GetCourseUseCase {
     const course = await this.courseRepository.findById(id);
     if (!course) throw new NotFoundException("Curso no encontrado");
 
-    if (userRole === UserRole.ADMIN || (userRole === UserRole.PROFESSOR && course.isProfessor(userId))) {
+    if (userRole === UserRole.PROFESSOR && course.isProfessor(userId)) {
       return CourseMapper.toDto(course);
     }
     

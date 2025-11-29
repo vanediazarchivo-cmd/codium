@@ -20,7 +20,7 @@ export class ListCourseStudentsUseCase {
       throw new NotFoundException("Curso no encontrado");
     }
 
-    if (requestUserRole !== UserRole.ADMIN && !course.isProfessor(requestUserId)) {
+    if (requestUserRole !== UserRole.PROFESSOR && !course.isProfessor(requestUserId)) {
       throw new ForbiddenException("No tienes permiso para ver los estudiantes de este curso");
     }
 

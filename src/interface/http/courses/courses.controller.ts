@@ -26,7 +26,7 @@ export class CoursesController {
   ) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Create a new course" })
   async create(@Body() dto: CreateCourseDto, @CurrentUser() user: any) {
     return this.createCourseUseCase.execute(dto, user.role);
@@ -51,14 +51,14 @@ export class CoursesController {
   }
 
   @Post(":id/students")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Enroll student in course" })
   async enrollStudent(@Param('id') courseId: string, @Body() dto: EnrollStudentDto, @CurrentUser() user: any) {
     return this.enrollStudentUseCase.execute(courseId, dto.studentId, user.id, user.role);
   }
 
   @Post(":id/students/:studentId/unenroll")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Unenroll student from course" })
   async unenrollStudent(@Param('id') courseId: string, @Param('studentId') studentId: string, @CurrentUser() user: any) {
     return this.unenrollStudentUseCase.execute(courseId, studentId, user.id, user.role);

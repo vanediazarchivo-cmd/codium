@@ -19,7 +19,7 @@ export class DeleteChallengeUseCase {
       throw new NotFoundException("Reto no encontrado");
     }
 
-    if (userRole !== UserRole.ADMIN && challenge.createdById !== userId) {
+    if (userRole !== UserRole.PROFESSOR && challenge.createdById !== userId) {
       throw new ForbiddenException("No tienes permiso para eliminar este reto");
     }
 

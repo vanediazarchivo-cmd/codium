@@ -19,10 +19,10 @@ export class UpdateChallengeUseCase {
     }
 
     const isOwner = challenge.createdById === userId;
-    const isAdmin = userRole === UserRole.ADMIN;
+    const isProfessor = userRole === UserRole.PROFESSOR;
 
-    if (!isOwner && !isAdmin) {
-      throw new ForbiddenException("You do not have permission to edit this challenge");
+    if (!isOwner && !isProfessor) {
+      throw new ForbiddenException("No tienes permiso para editar este reto");
     }
 
     const updated = await this.challengeRepository.update(id, dto);

@@ -15,8 +15,8 @@ export class CreateCourseUseCase {
   ) {}
 
   async execute(dto: CreateCourseDto, userRole: UserRole): Promise<CourseDto> {
-    if (userRole !== UserRole.ADMIN && userRole !== UserRole.PROFESSOR) {
-      throw new ForbiddenException("Solo administradores y profesores pueden crear cursos");
+    if (userRole !== UserRole.PROFESSOR) {
+      throw new ForbiddenException("Solo profesores pueden crear cursos");
     }
 
     const course = new Course({

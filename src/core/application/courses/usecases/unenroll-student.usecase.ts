@@ -16,7 +16,7 @@ export class UnenrollStudentUseCase {
       throw new NotFoundException("Curso no encontrado");
     }
 
-    if (requestUserRole !== UserRole.ADMIN && !course.isProfessor(requestUserId)) {
+    if (requestUserRole !== UserRole.PROFESSOR && !course.isProfessor(requestUserId)) {
       throw new ForbiddenException("No tienes permiso para desinscribir estudiantes de este curso");
     }
 

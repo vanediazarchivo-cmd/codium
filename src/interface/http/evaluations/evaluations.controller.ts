@@ -29,7 +29,7 @@ export class EvaluationsController {
   ) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Create a new evaluation" })
   @ApiResponse({ status: 201, description: "Evaluation created" })
   async create(@Body() dto: CreateEvaluationDto, @CurrentUser() user: any) {
@@ -58,7 +58,7 @@ export class EvaluationsController {
   }
 
   @Patch(":id")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Update evaluation" })
   @ApiResponse({ status: 200, description: "Evaluation updated" })
   async update(@Param("id") id: string, @Body() dto: UpdateEvaluationDto) {
@@ -66,7 +66,7 @@ export class EvaluationsController {
   }
 
   @Delete(":id")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Delete evaluation" })
   @ApiResponse({ status: 200, description: "Evaluation deleted" })
   async delete(@Param("id") id: string) {
@@ -74,7 +74,7 @@ export class EvaluationsController {
   }
 
   @Post(":id/challenges")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Add challenge to evaluation" })
   @ApiResponse({ status: 200, description: "Challenge added" })
   async addChallenge(@Param("id") evaluationId: string, @Body() dto: AddChallengeToEvaluationDto) {
@@ -82,7 +82,7 @@ export class EvaluationsController {
   }
 
   @Delete(":id/challenges/:challengeId")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Remove challenge from evaluation" })
   @ApiResponse({ status: 200, description: "Challenge removed" })
   async removeChallenge(@Param("id") evaluationId: string, @Param("challengeId") challengeId: string) {

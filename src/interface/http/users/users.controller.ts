@@ -15,9 +15,9 @@ export class UsersController {
   ) {}
 
   @Get()
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: "List all users (Admin only)" })
-  async listUsers() {
+    @Roles(UserRole.PROFESSOR)
+  @ApiOperation({ summary: "List all users (Professors only)" })
+    async list() {
     return this.listUsersUseCase.execute();
   }
 

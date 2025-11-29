@@ -17,7 +17,7 @@ export class EnrollStudentUseCase {
     const course = await this.courseRepository.findById(courseId);
     if (!course) throw new NotFoundException("Curso no encontrado");
 
-    if (requestUserRole !== UserRole.ADMIN && !course.isProfessor(requestUserId)) {
+    if (requestUserRole !== UserRole.PROFESSOR && !course.isProfessor(requestUserId)) {
       throw new ForbiddenException("No tienes permiso para inscribir estudiantes en este curso");
     }
 

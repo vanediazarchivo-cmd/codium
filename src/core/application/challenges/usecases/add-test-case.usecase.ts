@@ -22,7 +22,7 @@ export class AddTestCaseUseCase {
       throw new NotFoundException("Reto no encontrado");
     }
 
-    if (userRole !== UserRole.ADMIN && challenge.createdById !== userId) {
+    if (userRole !== UserRole.PROFESSOR && challenge.createdById !== userId) {
       throw new ForbiddenException("No tienes permiso para agregar casos de prueba a este reto");
     }
 

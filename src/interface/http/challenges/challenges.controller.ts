@@ -24,7 +24,7 @@ export class ChallengesController {
   ) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Create a new challenge" })
   async create(@Body() dto: CreateChallengeDto, @CurrentUser() user: any) {
     return this.createChallengeUseCase.execute(dto, user.id, user.role);
@@ -43,14 +43,14 @@ export class ChallengesController {
   }
 
   @Patch(":id")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Update challenge" })
   async update(@Param('id') id: string, @Body() dto: UpdateChallengeDto, @CurrentUser() user: any) {
     return this.updateChallengeUseCase.execute(id, dto, user.id, user.role);
   }
   
   @Delete(":id")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Delete challenge" })
   async delete(@Param('id') id: string, @CurrentUser() user: any) {
     return this.deleteChallengeUseCase.execute(id, user.id, user.role);

@@ -18,7 +18,7 @@ export class GetSubmissionUseCase {
     const submission = await this.submissionRepository.findById(id);
     if (!submission) throw new NotFoundException("Submission no encontrado");
 
-    if (submission.userId !== userId && userRole !== UserRole.ADMIN) {
+    if (submission.userId !== userId && userRole !== UserRole.PROFESSOR) {
       throw new ForbiddenException("No tienes permiso para ver este envío.");
     }
 

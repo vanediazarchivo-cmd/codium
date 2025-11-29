@@ -18,7 +18,7 @@ export class TestCasesController {
   ) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Add a test case to a challenge" })
   async addTestCase(
     @Param('challengeId') challengeId: string,
@@ -34,12 +34,12 @@ export class TestCasesController {
     @Param('challengeId') challengeId: string,
     @CurrentUser() user: any,
   ) {
-    // Students see only public cases; prof/admin see all
+    // Students see only public cases; professors see all
     const cases = await this.testCaseRepository.findByChallengeId(challengeId);
 
     if (!cases) return [];
 
-    if (user.role === 'PROFESSOR' || user.role === 'ADMIN') {
+    if (user.role === 'PROFESSOR') {
       return cases;
     }
 
@@ -54,14 +54,14 @@ export class TestCasesController {
   }
 
   @Delete(":testCaseId")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Delete a test case" })
   async deleteTestCase(
     @Param('challengeId') challengeId: string,
     @Param('testCaseId') testCaseId: string,
     @CurrentUser() user: any,
   ) {
-    // Solo profesores/administradores pueden eliminar
+    // Solo profesores pueden eliminar
     await this.testCaseRepository.delete(testCaseId);
     return { message: 'Test case deleted' };
   }

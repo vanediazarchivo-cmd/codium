@@ -4,16 +4,17 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost
 export class ApiClient {
   private static token: string | null = null
 
+  // Usar la key `auth_token` que esperan los hooks del frontend
   static setToken(token: string) {
     this.token = token
     if (typeof window !== "undefined") {
-      localStorage.setItem("token", token)
+      localStorage.setItem("auth_token", token)
     }
   }
 
   static getToken(): string | null {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("token") || this.token
+      return localStorage.getItem("auth_token") || this.token
     }
     return this.token
   }
@@ -21,7 +22,7 @@ export class ApiClient {
   static clearToken() {
     this.token = null
     if (typeof window !== "undefined") {
-      localStorage.removeItem("token")
+      localStorage.removeItem("auth_token")
     }
   }
 
@@ -86,6 +87,8 @@ export const authApi = {
   register: (firstName: string, lastName: string, email: string, password: string, role: string) =>
     ApiClient.post("/auth/register", { firstName, lastName, email, password, role }),
   getCurrentUser: () => ApiClient.get("/auth/me"),
+  // Alias `me` para compatibilidad con hooks existentes
+  me: () => ApiClient.get("/auth/me"),
 }
 
 // Courses APIs

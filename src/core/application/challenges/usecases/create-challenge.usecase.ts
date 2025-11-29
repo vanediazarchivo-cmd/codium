@@ -15,8 +15,8 @@ export class CreateChallengeUseCase {
   ) {}
 
   async execute(dto: CreateChallengeDto, userId: string, userRole: UserRole): Promise<ChallengeDto> {
-    if (userRole !== UserRole.ADMIN && userRole !== UserRole.PROFESSOR) {
-      throw new ForbiddenException("Only admins and professors can create challenges");
+    if (userRole !== UserRole.PROFESSOR) {
+      throw new ForbiddenException("Solo profesores pueden crear retos");
     }
 
     const newChallenge = new Challenge({

@@ -28,7 +28,7 @@ export class GroupsController {
   ) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Create a new group" })
   async create(@Body() dto: CreateGroupDto) {
     return this.createGroupUseCase.execute(
@@ -64,14 +64,14 @@ export class GroupsController {
   }
 
   @Patch(":id")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Update group" })
   async update(@Param("id") id: string, @Body() dto: UpdateGroupDto) {
     return this.updateGroupUseCase.execute(id, dto);
   }
 
   @Delete(":id")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Delete group" })
   async delete(@Param("id") id: string) {
     await this.deleteGroupUseCase.execute(id);
@@ -79,7 +79,7 @@ export class GroupsController {
   }
 
   @Post(":id/students")
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.PROFESSOR)
   @ApiOperation({ summary: "Enroll student in group" })
   async enrollStudent(
     @Param("id") groupId: string,

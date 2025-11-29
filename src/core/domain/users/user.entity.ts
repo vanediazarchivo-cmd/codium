@@ -1,7 +1,6 @@
 export enum UserRole {
   STUDENT = "STUDENT",
   PROFESSOR = "PROFESSOR",
-  ADMIN = "ADMIN",
 }
 
 interface UserProps {
@@ -39,11 +38,6 @@ export class User {
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
   }
-  
-  isAdmin(): boolean {
-    return this.role === UserRole.ADMIN;
-  }
-
   isProfessor(): boolean {
     return this.role === UserRole.PROFESSOR;
   }
@@ -53,6 +47,6 @@ export class User {
   }
 
   canManageChallenges(): boolean {
-    return this.isAdmin() || this.isProfessor();
+    return this.isProfessor();
   }
 }

@@ -15,9 +15,7 @@ export class ListCoursesUseCase {
   async execute(userId: string, userRole: UserRole): Promise<CourseDto[]> {
     let courses: Course[] = []; 
     
-    if (userRole === UserRole.ADMIN) {
-      courses = await this.courseRepository.findAll();
-    } else if (userRole === UserRole.PROFESSOR) {
+    if (userRole === UserRole.PROFESSOR) {
       courses = await this.courseRepository.findByProfessorId(userId);
     } else {
       courses = await this.courseRepository.findCoursesByStudentId(userId);
