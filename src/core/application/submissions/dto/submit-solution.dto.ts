@@ -8,10 +8,10 @@ export class SubmitSolutionDto {
   @IsNotEmpty()
   challengeId: string;
 
-  @ApiProperty({ example: "uuid-del-curso" })
+  @ApiProperty({ example: "uuid-del-grupo" })
   @IsUUID()
   @IsNotEmpty()
-  courseId: string;
+  groupId: string;
 
   @ApiProperty({ example: "def solution(arr):\n    return sum(arr)" })
   @IsString()

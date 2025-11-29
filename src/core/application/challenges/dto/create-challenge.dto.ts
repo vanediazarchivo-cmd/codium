@@ -32,7 +32,7 @@ export class CreateChallengeDto {
   @Max(1024)
   memoryLimit: number
 
-  @ApiProperty({ example: "uuid" })
+  @ApiProperty({ example: "uuid", description: "ID del grupo" })
   @IsUUID()
-  courseId: string
+  groupId: string
 }

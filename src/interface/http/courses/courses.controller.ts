@@ -4,6 +4,8 @@ import { CreateCourseUseCase } from "@core/application/courses/usecases/create-c
 import { ListCoursesUseCase } from "@core/application/courses/usecases/list-courses.usecase";
 import { GetCourseUseCase } from "@core/application/courses/usecases/get-course.usecase";
 import { EnrollStudentUseCase } from "@core/application/courses/usecases/enroll-student.usecase";
+import { ListCourseStudentsUseCase } from "@core/application/courses/usecases/list-course-students.usecase";
+import { UnenrollStudentUseCase } from "@core/application/courses/usecases/unenroll-student.usecase";
 import { CreateCourseDto } from "@core/application/courses/dto/create-course.dto";
 import { EnrollStudentDto } from "@core/application/courses/dto/enroll-student.dto";
 import { Roles } from "../auth/decorators/roles.decorator";
@@ -19,6 +21,8 @@ export class CoursesController {
     private readonly listCoursesUseCase: ListCoursesUseCase,
     private readonly getCourseUseCase: GetCourseUseCase,
     private readonly enrollStudentUseCase: EnrollStudentUseCase,
+    private readonly listCourseStudentsUseCase: ListCourseStudentsUseCase,
+    private readonly unenrollStudentUseCase: UnenrollStudentUseCase,
   ) {}
 
   @Post()
@@ -40,10 +44,23 @@ export class CoursesController {
     return this.getCourseUseCase.execute(id, user.id, user.role);
   }
 
+  @Get(':id/students')
+  @ApiOperation({ summary: 'List students enrolled in a course' })
+  async getStudents(@Param('id') courseId: string, @CurrentUser() user: any) {
+    return this.listCourseStudentsUseCase.execute(courseId, user.id, user.role);
+  }
+
   @Post(":id/students")
   @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
   @ApiOperation({ summary: "Enroll student in course" })
   async enrollStudent(@Param('id') courseId: string, @Body() dto: EnrollStudentDto, @CurrentUser() user: any) {
     return this.enrollStudentUseCase.execute(courseId, dto.studentId, user.id, user.role);
+  }
+
+  @Post(":id/students/:studentId/unenroll")
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @ApiOperation({ summary: "Unenroll student from course" })
+  async unenrollStudent(@Param('id') courseId: string, @Param('studentId') studentId: string, @CurrentUser() user: any) {
+    return this.unenrollStudentUseCase.execute(courseId, studentId, user.id, user.role);
   }
 }

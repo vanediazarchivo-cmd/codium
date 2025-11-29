@@ -1,0 +1,1099 @@
+{
+  "ANALYSIS": {
+    "BACKEND": {
+      "MODULES_STATUS": {
+        "AuthModule": {
+          "status": "✅ BIEN IMPLEMENTADO",
+          "description": "Autenticación con JWT, registro y login funcionales",
+          "location": "src/interface/http/auth/",
+          "components": [
+            "AuthController (login, register, getCurrentUser)",
+            "JwtAuthGuard (validación de tokens)",
+            "RolesGuard (validación de roles)",
+            "LoginUseCase, RegisterUseCase",
+            "BcryptService, JwtService"
+          ],
+          "issues": []
+        },
+        "ChallengesModule": {
+          "status": "✅ BIEN IMPLEMENTADO",
+          "description": "CRUD completo de retos",
+          "location": "src/interface/http/challenges/",
+          "components": [
+            "ChallengesController (GET, POST, PATCH, DELETE)",
+            "CreateChallengeUseCase",
+            "UpdateChallengeUseCase",
+            "ListChallengesUseCase",
+            "GetChallengeUseCase",
+            "DeleteChallengeUseCase",
+            "ChallengePrismaRepository"
+          ],
+          "issues": []
+        },
+        "SubmissionsModule": {
+          "status": "⚠️ PARCIALMENTE INCOMPLETO",
+          "description": "Envío de soluciones y procesamiento via queue",
+          "location": "src/interface/http/submissions/",
+          "components": [
+            "SubmissionsController (submit, get, listUserSubmissions)",
+            "SubmitSolutionUseCase",
+            "GetSubmissionUseCase",
+            "ListUserSubmissionsUseCase",
+            "SubmissionProcessor (procesamiento via Bull queue)",
+            "RunnerService (ejecución en contenedores Docker)"
+          ],
+          "issues": [
+            "❌ RunnerService y SubmissionProcessor NO están sincronizados - el processor dentro del API y los workers externos procesan redundantemente",
+            "⚠️ No hay mecanismo claro de distribución de carga entre main API processor y workers externos"
+          ]
+        },
+        "CoursesModule": {
+          "status": "✅ BIEN IMPLEMENTADO",
+          "description": "CRUD de cursos y enrolamiento de estudiantes",
+          "location": "src/interface/http/courses/",
+          "components": [
+            "CoursesController",
+            "CreateCourseUseCase",
+            "ListCoursesUseCase",
+            "GetCourseUseCase",
+            "EnrollStudentUseCase",
+            "CoursePrismaRepository"
+          ],
+          "issues": []
+        },
+        "EvaluationsModule": {
+          "status": "✅ BIEN IMPLEMENTADO",
+          "description": "Gestión de evaluaciones con límite de tiempo",
+          "location": "src/interface/http/evaluations/",
+          "components": [
+            "EvaluationsController",
+            "CreateEvaluationUseCase",
+            "UpdateEvaluationUseCase",
+            "AddChallengeToEvaluationUseCase",
+            "RemoveChallengeFromEvaluationUseCase",
+            "EvaluationPrismaRepository"
+          ],
+          "issues": []
+        },
+        "LeaderboardsModule": {
+          "status": "✅ BIEN IMPLEMENTADO",
+          "description": "Rankings por reto, curso y evaluación",
+          "location": "src/interface/http/leaderboards/",
+          "components": [
+            "LeaderboardsController",
+            "LeaderboardService con 3 métodos: getChallengeLeaderboard, getCourseLeaderboard, getEvaluationLeaderboard"
+          ],
+          "issues": []
+        },
+        "TestCasesModule": {
+          "status": "✅ BIEN IMPLEMENTADO",
+          "description": "Gestión de casos de prueba",
+          "location": "src/interface/http/test-cases/",
+          "components": [
+            "TestCasesController",
+            "AddTestCaseUseCase",
+            "TestCasePrismaRepository",
+            "Filtrado automático de casos ocultos para estudiantes"
+          ],
+          "issues": []
+        },
+        "GroupsModule": {
+          "status": "❌ INCOMPLETO",
+          "description": "Gestión de grupos dentro de cursos",
+          "location": "src/interface/http/groups/",
+          "components": [
+            "GroupsController (básico con métodos GET, POST directos a Prisma)"
+          ],
+          "issues": [
+            "❌ No usa arquitectura completa: no tiene UseCases ni Repositories pattern",
+            "❌ Accede directamente a PrismaService en el controller",
+            "❌ Schema.prisma NO tiene modelo Group - referenciado en controller pero no definido",
+            "❌ Falta autorización y validación correcta"
+          ]
+        },
+        "EnrollmentsModule": {
+          "status": "❌ NO IMPLEMENTADO",
+          "description": "Gestión de inscripciones de estudiantes",
+          "location": "src/interface/http/enrollments/",
+          "components": [
+            "EnrollmentsController (existe pero vacío)"
+          ],
+          "issues": [
+            "❌ Módulo existe pero sin implementación",
+            "❌ La funcionalidad de enrolamiento está en CoursesModule pero también en el módulo de Enrollments"
+          ]
+        }
+      },
+      "IMPLEMENTED": [
+        "✅ Autenticación JWT con rol-based access control",
+        "✅ CRUD completo para Retos (Challenges)",
+        "✅ Envío de soluciones y procesamiento asincrónico (Bull Queue)",
+        "✅ CRUD de Cursos y enrolamiento de estudiantes",
+        "✅ Gestión de Evaluaciones con límites de tiempo",
+        "✅ 3 tipos de Leaderboards (reto, curso, evaluación)",
+        "✅ Gestión de Casos de Prueba con visibilidad controlada",
+        "✅ Ejecución de código en contenedores Docker isolados (RunnerService)",
+        "✅ 4 Lenguajes soportados: Python, Java, Node.js, C++",
+        "✅ Validación de datos con class-validator",
+        "✅ Documentación Swagger/OpenAPI",
+        "✅ Guards de autorización: JwtAuthGuard, RolesGuard",
+        "✅ Mappers para convertir entre DTOs y entities"
+      ],
+      "INCOMPLETE": [
+        "❌ GroupsModule: No usa pattern arquitectónico correcto",
+        "❌ EnrollmentsModule: Vacío/no implementado",
+        "❌ Sincronización entre RunnerService y workers externos",
+        "❌ Logging estructurado no implementado",
+        "❌ Métricas no implementadas",
+        "❌ Error handling inconsistente en algunos controllers",
+        "❌ No hay paginación en listados"
+      ],
+      "ISSUES": [
+        {
+          "severity": "🔴 CRÍTICO",
+          "title": "Redundancia en procesamiento de submissions",
+          "description": "El SubmissionProcessor corre dentro del API (src/infrastructure/queue/submission.processor.ts) Y simultáneamente hay workers externos (workers/python-worker, workers/nodejs-worker, etc). Ambos procesan el mismo job de Redis.",
+          "file": "src/infrastructure/queue/submission.processor.ts vs workers/*/worker.ts",
+          "impact": "Submissions podrían procesarse dos veces o causar race conditions"
+        },
+        {
+          "severity": "🔴 CRÍTICO",
+          "title": "Modelo Group no existe en Schema.prisma",
+          "description": "GroupsController intenta usar prisma.group pero el modelo no está definido en schema.prisma",
+          "file": "src/interface/http/groups/groups.controller.ts vs prisma/schema.prisma",
+          "impact": "RuntimeError cuando se intenta crear/listar grupos"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "GroupsController no sigue arquitectura",
+          "description": "GroupsController accede directamente a PrismaService sin usar patrón Repositories+UseCases",
+          "file": "src/interface/http/groups/groups.controller.ts",
+          "impact": "Inconsistencia arquitectónica, difícil de testear y mantener"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "Login API retorna campo incorrecto",
+          "description": "LoginDto espera 'accessToken' pero AuthController podría retornar 'access_token'",
+          "file": "frontend/lib/api-client.ts línea 28",
+          "impact": "Login falla silenciosamente, frontend no guarda token correctamente"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "RunnerService ejecuta directamente en API",
+          "description": "RunnerService crea contenedores Docker directamente en el proceso API. Debería ser delegado solo a workers",
+          "file": "src/infrastructure/runners/runner.service.ts",
+          "impact": "El API se vuelve lento con muchas submissions; workers nunca se usan"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "Gestión de memoria en RunnerService incompleta",
+          "description": "RunnerService no rastrea ni reporta uso real de memoria, solo captura stderr",
+          "file": "src/infrastructure/runners/runner.service.ts línea ~200",
+          "impact": "Métrica memoryUsedMb siempre es 0"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Falta de logging estructurado",
+          "description": "No hay logging centralizado, solo console.log/Logger",
+          "file": "Todo el backend",
+          "impact": "Difícil debugging en producción"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Falta de paginación",
+          "description": "Listados sin paginación (listChallenges, listCourses, etc)",
+          "file": "src/core/application/*/usecases/list-*.usecase.ts",
+          "impact": "Mal rendimiento con muchos registros"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Versionado de API no implementado",
+          "description": "No hay versionado de endpoints (/api/v1/, /api/v2/)",
+          "file": "src/main.ts",
+          "impact": "Cambios futuros romperán clientes existentes"
+        }
+      ]
+    },
+    "FRONTEND": {
+      "PAGES_COMPONENTS": {
+        "Public Pages": {
+          "status": "✅ IMPLEMENTADAS",
+          "pages": [
+            "/ - Landing page con descripción de funcionalidades",
+            "/login - Página de login",
+            "/register - Página de registro"
+          ],
+          "issues": []
+        },
+        "Dashboard (Profesor/Admin)": {
+          "status": "⚠️ PARCIALMENTE",
+          "pages": [
+            "✅ /dashboard - Panel de control con stats",
+            "✅ /dashboard/challenges - Listar retos con estado (published/draft)",
+            "✅ /dashboard/challenges/create - Crear reto",
+            "✅ /dashboard/courses - Listar y crear cursos",
+            "✅ /dashboard/courses/[id] - Detalles curso con grupos",
+            "✅ /dashboard/evaluations - Listar evaluaciones",
+            "⚠️ /dashboard/submissions - Mock data, no conectado a API"
+          ],
+          "issues": [
+            "❌ Challenges page usa mock data hardcodeado, no consume API",
+            "❌ Courses page usa estado local, no persiste cambios",
+            "❌ Falta formulario para crear evaluación",
+            "❌ Falta página de editar reto",
+            "❌ Falta página de editar evaluación"
+          ]
+        },
+        "Student Pages": {
+          "status": "⚠️ PARCIALMENTE",
+          "pages": [
+            "✅ /student - Dashboard estudiantil",
+            "✅ /student/courses - Listar cursos inscritos",
+            "✅ /student/courses/[id] - Detalles curso",
+            "✅ /student/courses/[id]/challenges/[challengeId] - Resolver reto (con editor)",
+            "✅ /student/courses/[id]/evaluations/[evaluationId] - Tomar evaluación",
+            "✅ /student/evaluations - Listar evaluaciones",
+            "✅ /student/challenges - Listar retos disponibles"
+          ],
+          "issues": [
+            "⚠️ Páginas existen pero usan mock data parcialmente",
+            "❌ No hay integración real con API para resolver retos",
+            "❌ No hay timer real para evaluaciones",
+            "❌ No hay feedback real de resultados de test cases"
+          ]
+        }
+      },
+      "COMPONENTS": {
+        "Implemented": [
+          "✅ dashboard-sidebar - Navegación sidebar del dashboard",
+          "✅ student-sidebar - Navegación sidebar del estudiante",
+          "✅ challenge-submissions - Componente para listar submissions",
+          "✅ challenge-test-cases - Componente para gestionar test cases",
+          "✅ challenge-leaderboard - Mostrar ranking de un reto",
+          "✅ group-challenges - Listar retos de un grupo",
+          "✅ group-evaluations - Listar evaluaciones de un grupo",
+          "✅ group-leaderboard - Mostrar ranking de un grupo",
+          "✅ theme-provider - Provider de tema dark/light",
+          "✅ codium-logo - Logo del proyecto"
+        ],
+        "Missing": [
+          "❌ CodeEditor component - Editor de código para resolver retos",
+          "❌ EvaluationTimer component - Timer con cuenta regresiva",
+          "❌ SubmissionResults component - Mostrar resultados de test cases",
+          "❌ ChallengeDifficultyChart - Gráfico de dificultad",
+          "❌ StudentProgressChart - Gráfico de progreso del estudiante",
+          "❌ RankingChart - Visualización de leaderboard"
+        ]
+      },
+      "API_EXPECTATIONS": [
+        {
+          "endpoint": "POST /api/auth/login",
+          "expected_response": "{\"access_token\": \"...\", \"user\": {...}}",
+          "actual_response": "Incierto - frontend espera 'access_token'",
+          "status": "⚠️ DESALINEADO"
+        },
+        {
+          "endpoint": "GET /api/challenges",
+          "expected_behavior": "Listar retos del usuario según rol",
+          "implemented": "✅ SÍ",
+          "frontend_usage": "challengesApi.list(courseId?)",
+          "status": "✅ OK"
+        },
+        {
+          "endpoint": "GET /api/submissions/my-submissions",
+          "expected_behavior": "Listar submissions del usuario autenticado",
+          "implemented": "✅ SÍ",
+          "frontend_usage": "submissionsApi.list()",
+          "status": "✅ OK"
+        },
+        {
+          "endpoint": "POST /api/submissions",
+          "expected_behavior": "Enviar solución y encolarla",
+          "implemented": "✅ SÍ",
+          "frontend_usage": "submissionsApi.submit({challengeId, code, language})",
+          "status": "✅ OK",
+          "note": "Frontend no tiene UI para enviar, solo mock"
+        },
+        {
+          "endpoint": "GET /api/leaderboards/challenges/:id",
+          "expected_behavior": "Ranking de reto",
+          "implemented": "✅ SÍ",
+          "frontend_usage": "leaderboardsApi.getChallengeLeaderboard(id)",
+          "status": "✅ OK"
+        },
+        {
+          "endpoint": "GET /api/courses",
+          "expected_behavior": "Listar cursos del usuario",
+          "implemented": "✅ SÍ",
+          "frontend_usage": "coursesApi.list()",
+          "status": "✅ OK"
+        },
+        {
+          "endpoint": "POST /api/challenges",
+          "expected_behavior": "Crear nuevo reto (profesor/admin)",
+          "implemented": "✅ SÍ",
+          "frontend_usage": "challengesApi.create(dto)",
+          "status": "⚠️ Frontend no tiene formulario de creación funcional"
+        },
+        {
+          "endpoint": "GET /api/auth/me",
+          "expected_behavior": "Obtener usuario actual",
+          "implemented": "✅ SÍ",
+          "frontend_usage": "apiClient.authApi.getCurrentUser()",
+          "status": "✅ OK"
+        }
+      ],
+      "ISSUES": [
+        {
+          "severity": "🔴 CRÍTICO",
+          "title": "Login incorrecto - Campo access_token vs token",
+          "description": "frontend/lib/api-client.ts línea 28 busca response.access_token pero backend podría retornar accessToken",
+          "file": "frontend/lib/api-client.ts",
+          "impact": "Login no funciona, usuario no puede autenticarse"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "Mock data en lugar de llamadas API",
+          "description": "Muchas páginas usan estado local con mock data en lugar de consumir API",
+          "files": [
+            "frontend/app/dashboard/challenges/page.tsx - hardcoded challenges",
+            "frontend/app/dashboard/courses/page.tsx - estado local",
+            "frontend/app/dashboard/submissions/page.tsx - mock submissions"
+          ],
+          "impact": "Cambios no se persistenGuest, UI no refleja estado real"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "Falta componente CodeEditor",
+          "description": "No hay forma de resolver retos - no existe editor de código",
+          "file": "frontend/components/ - FALTA",
+          "impact": "Estudiantes no pueden escribir ni enviar soluciones"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "Falta feedback de submissions",
+          "description": "No hay componente para mostrar resultados de test cases",
+          "file": "frontend/components/ - FALTA",
+          "impact": "Estudiantes no ven si su solución es correcta"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Sin timer para evaluaciones",
+          "description": "Páginas de evaluación no tienen cuenta regresiva de tiempo",
+          "file": "frontend/app/student/courses/[id]/evaluations/[evaluationId]/page.tsx",
+          "impact": "Estudiantes no saben cuánto tiempo les queda"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Sin sincronización de estado de autenticación",
+          "description": "No hay Provider global de autenticación (AuthContext)",
+          "file": "frontend/ - FALTA",
+          "impact": "Token se guarda pero estado no está sincronizado entre páginas"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Sin manejo de errores de API",
+          "description": "API client no retry, no exponential backoff",
+          "file": "frontend/lib/api-client.ts",
+          "impact": "Una falla de red requiere reintentar manualmente"
+        }
+      ]
+    },
+    "DATABASE": {
+      "MODELS_STATUS": {
+        "User": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id (UUID, PK)",
+            "email (UNIQUE)",
+            "password (bcrypt hash)",
+            "firstName, lastName",
+            "role (STUDENT, PROFESSOR, ADMIN)",
+            "createdAt, updatedAt"
+          ],
+          "relations": [
+            "submissions (1:N)",
+            "coursesEnrolled (N:M via CourseStudent)",
+            "coursesProfessor (N:M)",
+            "createdChallenges (1:N)"
+          ],
+          "issues": []
+        },
+        "Course": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id, name, code (UNIQUE), group, semester",
+            "createdAt, updatedAt"
+          ],
+          "relations": [
+            "professors (N:M)",
+            "students (N:M via CourseStudent)",
+            "challenges (1:N)",
+            "submissions (1:N)",
+            "evaluations (1:N)"
+          ],
+          "issues": []
+        },
+        "Challenge": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id, title, description, difficulty (EASY/MEDIUM/HARD)",
+            "tags (array), timeLimit (ms), memoryLimit (MB)",
+            "status (DRAFT/PUBLISHED/ARCHIVED)",
+            "courseId, createdById",
+            "createdAt, updatedAt"
+          ],
+          "relations": [
+            "course (N:1)",
+            "createdBy (User)",
+            "testCases (1:N)",
+            "submissions (1:N)"
+          ],
+          "issues": []
+        },
+        "TestCase": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id, challengeId, input, expectedOutput",
+            "isHidden (boolean), points (int), order (int)"
+          ],
+          "relations": [
+            "challenge (N:1 cascade)",
+            "results (1:N)"
+          ],
+          "issues": []
+        },
+        "Submission": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id, userId, challengeId, courseId",
+            "code (TEXT), language (PYTHON/JAVA/NODEJS/CPP)",
+            "status (QUEUED/RUNNING/ACCEPTED/WRONG_ANSWER/TIME_LIMIT_EXCEEDED/RUNTIME_ERROR/COMPILATION_ERROR)",
+            "score (0-100), timeMsTotal, memoryUsedMb",
+            "createdAt, updatedAt"
+          ],
+          "relations": [
+            "user (N:1)",
+            "challenge (N:1)",
+            "course (N:1)",
+            "results (1:N TestCaseResult)"
+          ],
+          "issues": []
+        },
+        "TestCaseResult": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id, submissionId, testCaseId",
+            "status (PASS/FAIL/TIMEOUT/RUNTIME_ERROR)",
+            "timeMs, memoryMb, output, error"
+          ],
+          "relations": [
+            "submission (N:1 cascade)",
+            "testCase (N:1)"
+          ],
+          "issues": []
+        },
+        "Evaluation": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id, name, description, courseId",
+            "status (DRAFT/PUBLISHED/CLOSED)",
+            "startDate, endDate",
+            "createdAt, updatedAt"
+          ],
+          "relations": [
+            "course (N:1)",
+            "challenges (N:M via EvaluationChallenge)"
+          ],
+          "issues": []
+        },
+        "EvaluationChallenge": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "id, evaluationId, challengeId, order"
+          ],
+          "relations": [
+            "evaluation (N:1 cascade)",
+            "challenge (UNIQUE per evaluation)"
+          ],
+          "issues": []
+        },
+        "CourseStudent": {
+          "status": "✅ COMPLETO",
+          "fields": [
+            "courseId, studentId (composite PK)",
+            "enrolledAt"
+          ],
+          "relations": [
+            "course (N:1 cascade)",
+            "student (N:1 cascade)"
+          ],
+          "issues": []
+        },
+        "Group": {
+          "status": "❌ FALTA",
+          "expected_fields": [
+            "id, name, courseId, number",
+            "createdAt, updatedAt"
+          ],
+          "expected_relations": [
+            "course (N:1)",
+            "students (N:M)",
+            "challenges (N:M)"
+          ],
+          "issues": [
+            "❌ Modelo no existe en schema.prisma pero GroupsController lo referencia"
+          ]
+        }
+      },
+      "ISSUES": [
+        {
+          "severity": "🔴 CRÍTICO",
+          "title": "Modelo Group no existe en schema.prisma",
+          "description": "GroupsController intenta usar prisma.group pero no está definido. Causará runtime errors.",
+          "impact": "Funcionalidad de grupos completamente rota"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Falta cascada en algunas relaciones",
+          "description": "No todas las relaciones 1:N tienen onDelete: Cascade definido",
+          "file": "prisma/schema.prisma",
+          "impact": "Problemas al eliminar registros padres"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Indización incompleta",
+          "description": "Faltan índices en campos comúnmente consultados (userId, challengeId, courseId)",
+          "file": "prisma/schema.prisma",
+          "impact": "Queries lentas en tablas grandes"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Sin auditoría de cambios",
+          "description": "No hay tracking de quién cambió qué y cuándo (excepto timestamps básicos)",
+          "impact": "Imposible auditar cambios de administrador o profesor"
+        }
+      ]
+    },
+    "DOCKER_INFRASTRUCTURE": {
+      "SERVICES": {
+        "postgres": {
+          "status": "✅ CONFIGURADO",
+          "image": "postgres:16-alpine",
+          "port": "5432",
+          "healthcheck": "✅ Presente",
+          "volumes": "postgres_data",
+          "env_vars": [
+            "POSTGRES_USER=codium",
+            "POSTGRES_PASSWORD=codium_password",
+            "POSTGRES_DB=codium_db"
+          ],
+          "issues": []
+        },
+        "redis": {
+          "status": "✅ CONFIGURADO",
+          "image": "redis:7-alpine",
+          "port": "6379",
+          "healthcheck": "✅ Presente",
+          "volumes": "redis_data",
+          "issues": []
+        },
+        "api": {
+          "status": "✅ CONFIGURADO",
+          "dockerfile": "Dockerfile.dev",
+          "port": "3000",
+          "depends_on": "postgres, redis",
+          "volumes": [
+            ".:/app (code hot-reload)",
+            "/app/node_modules",
+            "/var/run/docker.sock (Docker-in-Docker para ejecutar contenedores)"
+          ],
+          "command": "pnpm run start:dev",
+          "issues": [
+            "⚠️ Expone /var/run/docker.sock - riesgo de seguridad"
+          ]
+        },
+        "frontend": {
+          "status": "✅ CONFIGURADO",
+          "dockerfile": "Dockerfile.frontend",
+          "port": "3001",
+          "build_args": "NEXT_PUBLIC_API_URL",
+          "depends_on": "api",
+          "issues": [
+            "⚠️ NEXT_PUBLIC_API_URL hardcoded a http://localhost:3001 (debe ser http://api:3000/api en contenedor)"
+          ]
+        },
+        "worker-python": {
+          "status": "✅ CONFIGURADO",
+          "dockerfile": "workers/python-worker/Dockerfile",
+          "depends_on": "postgres, redis",
+          "volumes": "/var/run/docker.sock",
+          "issues": [
+            "⚠️ Expone socket Docker"
+          ]
+        },
+        "worker-java": {
+          "status": "✅ CONFIGURADO",
+          "dockerfile": "workers/java-worker/Dockerfile",
+          "issues": []
+        },
+        "worker-nodejs": {
+          "status": "✅ CONFIGURADO",
+          "dockerfile": "workers/nodejs-worker/Dockerfile",
+          "issues": []
+        },
+        "worker-cpp": {
+          "status": "✅ CONFIGURADO",
+          "dockerfile": "workers/cpp-worker/Dockerfile",
+          "issues": []
+        }
+      },
+      "WORKERS": {
+        "python-worker": {
+          "status": "✅ IMPLEMENTADO",
+          "file": "workers/python-worker/worker.ts",
+          "language_support": "PYTHON",
+          "container_image": "python:3.11-alpine",
+          "functionality": [
+            "✅ Escucha cola Redis (submissions)",
+            "✅ Ejecuta código Python en contenedor aislado",
+            "✅ Compara salida esperada con obtenida",
+            "✅ Reporta resultados a BD"
+          ],
+          "issues": [
+            "⚠️ Redundancia con RunnerService del API"
+          ]
+        },
+        "nodejs-worker": {
+          "status": "✅ IMPLEMENTADO",
+          "file": "workers/nodejs-worker/worker.ts",
+          "language_support": "NODEJS",
+          "container_image": "node:20-alpine",
+          "functionality": [
+            "✅ Ejecuta código JavaScript",
+            "✅ Usa mismo TAR buffer y Docker abstractions"
+          ],
+          "issues": [
+            "⚠️ Redundancia con RunnerService del API"
+          ]
+        },
+        "java-worker": {
+          "status": "❌ NO IMPLEMENTADO",
+          "file": "workers/java-worker/worker.ts",
+          "description": "Archivo existe pero sin contenido",
+          "issues": [
+            "❌ Vacío - no procesa trabajos"
+          ]
+        },
+        "cpp-worker": {
+          "status": "❌ NO IMPLEMENTADO",
+          "file": "workers/cpp-worker/worker.ts",
+          "description": "Archivo existe pero sin contenido",
+          "issues": [
+            "❌ Vacío - no procesa trabajos"
+          ]
+        }
+      },
+      "ISSUES": [
+        {
+          "severity": "🔴 CRÍTICO",
+          "title": "Redundancia total de procesamiento",
+          "description": "RunnerService en API ejecuta Docker + SubmissionProcessor en Queue + 4 workers externos. Todos compiten por el mismo job.",
+          "files": [
+            "src/infrastructure/runners/runner.service.ts",
+            "src/infrastructure/queue/submission.processor.ts",
+            "workers/*/worker.ts"
+          ],
+          "impact": "Submissions pueden procesarse múltiples veces o nunca"
+        },
+        {
+          "severity": "🔴 CRÍTICO",
+          "title": "Java y C++ workers no implementados",
+          "description": "Archivos vacíos pero schema soporta Language.JAVA y Language.CPP",
+          "files": "workers/java-worker/worker.ts, workers/cpp-worker/worker.ts",
+          "impact": "Estudiantes no pueden enviar soluciones en Java o C++"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "Exposición de Docker socket sin restricciones",
+          "description": "/var/run/docker.sock expuesto en API, Python, Java, NodeJS, C++ workers",
+          "file": "docker-compose.yml",
+          "impact": "Contenedor comprometido = host comprometido (privesc attack)"
+        },
+        {
+          "severity": "🟠 ALTO",
+          "title": "API URL incorrecto en frontend",
+          "description": "Frontend env var NEXT_PUBLIC_API_URL hardcoded a http://localhost:3001 en compose",
+          "file": "docker-compose.yml línea 56",
+          "impact": "Frontend no puede conectar al API dentro del contenedor"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Sin persistencia de logs",
+          "description": "No hay volumen para logs de servicios",
+          "file": "docker-compose.yml",
+          "impact": "Imposible revisar logs históricos"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "BASE_URL del env no usado",
+          "description": "DATABASE_URL en env pero no se valida existencia",
+          "file": "docker-compose.yml",
+          "impact": "Errores ocultos si BASE_URL malformado"
+        },
+        {
+          "severity": "🟡 MEDIO",
+          "title": "Sin límites de recursos en compose",
+          "description": "Servicios sin memoria limits, CPU shares",
+          "file": "docker-compose.yml",
+          "impact": "Un servicio puede consumir todos los recursos del host"
+        }
+      ]
+    },
+    "INFRASTRUCTURE": {
+      "QUEUE": {
+        "status": "⚠️ PARCIALMENTE IMPLEMENTADO",
+        "technology": "Bull + Redis",
+        "files": [
+          "src/infrastructure/queue/bull.service.ts",
+          "src/infrastructure/queue/queue.module.ts",
+          "src/infrastructure/queue/submission.processor.ts"
+        ],
+        "implemented": [
+          "✅ Redis connection via BullModule",
+          "✅ Queue configuration en app.module.ts",
+          "✅ SubmissionProcessor @Process handler",
+          "✅ Retry logic (attempts: 3, exponential backoff)"
+        ],
+        "issues": [
+          "⚠️ SubmissionProcessor corre en el mismo proceso que API - debería ser separado",
+          "⚠️ Ningún procesamiento en el processor si workers externos manejan"
+        ]
+      },
+      "RUNNERS": {
+        "status": "⚠️ DUPLICADO/CONFLICTIVO",
+        "file": "src/infrastructure/runners/runner.service.ts",
+        "purpose": "Ejecutar código en contenedores Docker aislados",
+        "implemented": [
+          "✅ 4 métodos: runPython, runNodeJs, runCpp, runJava",
+          "✅ executeContainer con security constraints",
+          "✅ Limits de CPU, memoria, procesos",
+          "✅ NetworkMode: none (sin internet)",
+          "✅ CapDrop: ALL (máxima seguridad)",
+          "✅ Timeout handling",
+          "✅ TAR buffer creation para escribir archivos"
+        ],
+        "issues": [
+          "❌ RunnerService es llamado desde SubmissionProcessor dentro del API",
+          "❌ Simultáneamente workers externos también lo hacen",
+          "❌ Debería ser SOLO en workers, no en API"
+        ]
+      },
+      "SECURITY": {
+        "status": "✅ BIEN CONFIGURADO (en servicios de ejecución)",
+        "files": [
+          "src/infrastructure/security/bcrypt.service.ts",
+          "src/infrastructure/security/jwt.service.ts"
+        ],
+        "implemented": [
+          "✅ Passwords hasheadas con bcrypt",
+          "✅ JWT tokens con expiración",
+          "✅ JwtAuthGuard para validación",
+          "✅ RolesGuard para autorización",
+          "✅ @Public() decorator para endpoints públicos",
+          "✅ Ejecución de código en contenedores aislados"
+        ],
+        "issues": [
+          "⚠️ JWT_SECRET en .env de ejemplo sin protección",
+          "⚠️ Docker socket expuesto en compose (riesgo de privesc)"
+        ]
+      }
+    },
+    "MISALIGNMENTS": [
+      {
+        "component": "Login Response",
+        "backend": "Retorna acceso_token (LoginResponse.accessToken)",
+        "frontend": "Espera access_token (apiClient.ts línea 28)",
+        "severity": "🔴 CRÍTICO",
+        "fix": "Unificar nombre de campo: ambos deben usar accessToken"
+      },
+      {
+        "component": "Frontend API Base URL",
+        "backend": "API corre en :3000/api dentro de contenedor (servicios)",
+        "frontend": "Hardcoded http://localhost:3001 en docker-compose env",
+        "severity": "🔴 CRÍTICO",
+        "fix": "Cambiar NEXT_PUBLIC_API_URL a http://api:3000/api en compose"
+      },
+      {
+        "component": "Submission Processing",
+        "backend": "RunnerService en API + SubmissionProcessor en Queue + Workers externos (Python, Node)",
+        "frontend": "Solo espera que API procese (ignora workers)",
+        "severity": "🔴 CRÍTICO",
+        "fix": "Decidir: o solo API procesa, o solo workers. Eliminar redundancia."
+      },
+      {
+        "component": "Groups Functionality",
+        "backend": "GroupsController hace referencia a prisma.group que NO existe",
+        "frontend": "No hay UI para grupos",
+        "severity": "🔴 CRÍTICO",
+        "fix": "O implementar modelo Group en schema.prisma, o eliminar Groups completamente"
+      },
+      {
+        "component": "Test Case Visibility",
+        "backend": "Esconde test cases isHidden=true para estudiantes",
+        "frontend": "No consume API de test cases, usa mock data",
+        "severity": "🟡 MEDIO",
+        "fix": "Frontend debe consultar endpoint de test cases ocultos/visibles"
+      },
+      {
+        "component": "Challenge Status",
+        "backend": "Estados: DRAFT, PUBLISHED, ARCHIVED",
+        "frontend": "Challenge page solo muestra Publicado/Borrador (sin ARCHIVED)",
+        "severity": "🟡 MEDIO",
+        "fix": "Frontend debe mostrar sección de archivados o filtrar correctamente"
+      },
+      {
+        "component": "Enrollment Workflow",
+        "backend": "EnrollStudentUseCase en CoursesModule + vacío EnrollmentsModule",
+        "frontend": "No tiene UI para enrolar estudiantes",
+        "severity": "🟡 MEDIO",
+        "fix": "Completar EnrollmentsModule o consolidar en CoursesModule"
+      },
+      {
+        "component": "Code Submission",
+        "backend": "SubmitSolutionUseCase recibe (SubmitSolutionDto, userId)",
+        "frontend": "No hay formulario para enviar - no hay CodeEditor component",
+        "severity": "🔴 CRÍTICO",
+        "fix": "Crear CodeEditor component con syntax highlighting y envío de solución"
+      },
+      {
+        "component": "Evaluation Timer",
+        "backend": "Evaluation.startDate, Evaluation.endDate definidos",
+        "frontend": "No hay implementación de timer o countdown",
+        "severity": "🟠 ALTO",
+        "fix": "Implementar EvaluationTimer component en student/courses/[id]/evaluations/[evaluationId]/"
+      },
+      {
+        "component": "Leaderboard Real-time",
+        "backend": "LeaderboardService calcula en tiempo real desde BD",
+        "frontend": "No consulta leaderboards, solo mockData",
+        "severity": "🟡 MEDIO",
+        "fix": "Frontend debe llamar leaderboardsApi en páginas de ranking"
+      }
+    ],
+    "CRITICAL_MISSING": [
+      {
+        "feature": "🔴 Model 'Group' en Prisma",
+        "description": "GroupsController lo referencia pero schema.prisma no lo define",
+        "file": "prisma/schema.prisma",
+        "priority": "CRÍTICO - bloqueante",
+        "impact": "Todas las operaciones de grupos fallarán"
+      },
+      {
+        "feature": "🔴 Java Worker Implementation",
+        "description": "workers/java-worker/worker.ts está vacío",
+        "file": "workers/java-worker/worker.ts",
+        "priority": "CRÍTICO - bloqueante para lenguaje Java",
+        "impact": "Estudiantes no pueden enviar en Java"
+      },
+      {
+        "feature": "🔴 C++ Worker Implementation",
+        "description": "workers/cpp-worker/worker.ts está vacío",
+        "file": "workers/cpp-worker/worker.ts",
+        "priority": "CRÍTICO - bloqueante para lenguaje C++",
+        "impact": "Estudiantes no pueden enviar en C++"
+      },
+      {
+        "feature": "🔴 Frontend CodeEditor Component",
+        "description": "No existe editor de código para resolver retos",
+        "file": "frontend/components/ - FALTA",
+        "priority": "CRÍTICO - bloqueante para usuarios",
+        "impact": "Estudiantes no pueden escribir soluciones"
+      },
+      {
+        "feature": "🔴 Synchronization entre RunnerService y Workers",
+        "description": "Redundancia total - ambos procesan mismo job",
+        "file": "src/infrastructure/queue/, workers/",
+        "priority": "CRÍTICO - causa race conditions",
+        "impact": "Submissions se procesan múltiples veces o nunca"
+      },
+      {
+        "feature": "🔴 API Response Field Consistency",
+        "description": "access_token vs accessToken desalineado",
+        "file": "src/core/application/auth vs frontend/lib/api-client",
+        "priority": "CRÍTICO - bloqueante para login",
+        "impact": "Usuarios no pueden autenticarse"
+      },
+      {
+        "feature": "🟠 Frontend EnrollmentsModule Implementation",
+        "description": "EnrollmentsModule existe pero vacío",
+        "file": "src/interface/http/enrollments/enrollments.controller.ts",
+        "priority": "ALTO - feature incompleto",
+        "impact": "Flujo de enrolamiento incompleto"
+      },
+      {
+        "feature": "🟠 Evaluation Timer Component",
+        "description": "No hay countdown timer para evaluaciones",
+        "file": "frontend/components/ - FALTA",
+        "priority": "ALTO - feature crítica para evaluaciones",
+        "impact": "Estudiantes no saben cuánto tiempo les queda"
+      },
+      {
+        "feature": "🟠 Submission Results Component",
+        "description": "No hay visualización de test case results",
+        "file": "frontend/components/ - FALTA",
+        "priority": "ALTO - feedback crítico",
+        "impact": "Estudiantes no ven si pasaron test cases"
+      },
+      {
+        "feature": "🟡 Pagination en Listados",
+        "description": "No hay paginación en GET endpoints",
+        "file": "src/core/application/*/usecases/list-*.usecase.ts",
+        "priority": "MEDIO - escalabilidad",
+        "impact": "Mal rendimiento con muchos registros"
+      },
+      {
+        "feature": "🟡 Structured Logging",
+        "description": "No hay logging centralizado",
+        "file": "src/ - TODO",
+        "priority": "MEDIO - debugging",
+        "impact": "Difícil tracing en producción"
+      },
+      {
+        "feature": "🟡 API Versioning",
+        "description": "No hay /api/v1/, /api/v2/ versionado",
+        "file": "src/main.ts",
+        "priority": "MEDIO - mantenimiento futuro",
+        "impact": "Cambios rompen clientes"
+      },
+      {
+        "feature": "🟡 Docker Socket Security Hardening",
+        "description": "Socket Docker expuesto sin restricciones",
+        "file": "docker-compose.yml",
+        "priority": "MEDIO - seguridad",
+        "impact": "Riesgo de escalada de privilegios"
+      },
+      {
+        "feature": "🟡 Global AuthContext en Frontend",
+        "description": "No hay Provider para estado de autenticación",
+        "file": "frontend/ - FALTA",
+        "priority": "MEDIO - estado global",
+        "impact": "Estado de auth no sincronizado entre páginas"
+      }
+    ],
+    "PRIORITY_FIXES": [
+      {
+        "priority": 1,
+        "task": "CRITICAL: Definir Modelo Group en Prisma",
+        "file": "prisma/schema.prisma",
+        "time_estimate": "15 min",
+        "reason": "GroupsController y schema desalineados - bloqueante"
+      },
+      {
+        "priority": 2,
+        "task": "CRITICAL: Resolver desalineación de respuesta de Login",
+        "file": "src/core/application/auth vs frontend/lib/api-client.ts",
+        "time_estimate": "10 min",
+        "reason": "Login completamente roto"
+      },
+      {
+        "priority": 3,
+        "task": "CRITICAL: Decidir estrategia de procesamiento de submissions",
+        "file": "src/infrastructure/ + workers/",
+        "time_estimate": "2 horas",
+        "reason": "Redundancia causa race conditions. Elegir: API solo, o Workers solo"
+      },
+      {
+        "priority": 4,
+        "task": "CRITICAL: Implementar Java Worker",
+        "file": "workers/java-worker/worker.ts",
+        "time_estimate": "1 hora",
+        "reason": "Lenguaje Java soportado en schema pero worker vacío"
+      },
+      {
+        "priority": 5,
+        "task": "CRITICAL: Implementar C++ Worker",
+        "file": "workers/cpp-worker/worker.ts",
+        "time_estimate": "1 hora",
+        "reason": "Lenguaje C++ soportado en schema pero worker vacío"
+      },
+      {
+        "priority": 6,
+        "task": "CRITICAL: Crear CodeEditor Component",
+        "file": "frontend/components/code-editor.tsx",
+        "time_estimate": "3 horas",
+        "reason": "Sin editor, estudiantes no pueden resolver retos"
+      },
+      {
+        "priority": 7,
+        "task": "CRITICAL: Corregir API URL en Frontend (docker-compose)",
+        "file": "docker-compose.yml línea 56",
+        "time_estimate": "5 min",
+        "reason": "Frontend no puede conectar al API en contenedor"
+      },
+      {
+        "priority": 8,
+        "task": "CRITICAL: Crear Submission Results Component",
+        "file": "frontend/components/submission-results.tsx",
+        "time_estimate": "2 horas",
+        "reason": "Sin feedback visual, estudiantes no saben si pasaron"
+      },
+      {
+        "priority": 9,
+        "task": "HIGH: Implementar Evaluation Timer Component",
+        "file": "frontend/components/evaluation-timer.tsx",
+        "time_estimate": "2 horas",
+        "reason": "Evaluaciones requieren límite de tiempo visible"
+      },
+      {
+        "priority": 10,
+        "task": "HIGH: Completar EnrollmentsModule",
+        "file": "src/interface/http/enrollments/",
+        "time_estimate": "1 hora",
+        "reason": "Flujo de inscripción incompleto"
+      },
+      {
+        "priority": 11,
+        "task": "HIGH: Conectar Dashboard Pages a API",
+        "file": "frontend/app/dashboard/challenges/, courses/, etc",
+        "time_estimate": "3 horas",
+        "reason": "Actualmente usan mock data, no persisten cambios"
+      },
+      {
+        "priority": 12,
+        "task": "MEDIUM: Agregar Paginación a Listados",
+        "file": "src/core/application/*/usecases/list-*.usecase.ts",
+        "time_estimate": "2 horas",
+        "reason": "Escalabilidad con muchos registros"
+      },
+      {
+        "priority": 13,
+        "task": "MEDIUM: Implementar Structured Logging",
+        "file": "src/ - infrastructure/logging/ (nueva)",
+        "time_estimate": "2 horas",
+        "reason": "Debugging en producción difícil actualmente"
+      },
+      {
+        "priority": 14,
+        "task": "MEDIUM: Crear Global AuthContext Frontend",
+        "file": "frontend/contexts/auth-context.tsx (nueva)",
+        "time_estimate": "1 hora",
+        "reason": "Estado de autenticación no sincronizado"
+      },
+      {
+        "priority": 15,
+        "task": "MEDIUM: Hardening de Docker Socket",
+        "file": "docker-compose.yml",
+        "time_estimate": "1 hora",
+        "reason": "Riesgo de seguridad - privesc attack"
+      },
+      {
+        "priority": 16,
+        "task": "LOW: Agregar API Versioning",
+        "file": "src/main.ts",
+        "time_estimate": "1 hora",
+        "reason": "Preparar para cambios futuros sin romper clientes"
+      }
+    ]
+  }
+}

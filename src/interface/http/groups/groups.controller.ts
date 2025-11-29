@@ -1,70 +1,80 @@
-import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common'
-import { JwtGuard } from '@/infrastructure/security/jwt.guard'
-import { RolesGuard } from '@/infrastructure/security/roles.guard'
-import { PrismaService } from '@/infrastructure/database/prisma.service'
+import { Controller, Get, Post, Patch, Delete, Param, Query, Body } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiBearerAuth } from "@nestjs/swagger";
+import { CreateGroupUseCase } from "@core/application/groups/usecases/create-group.usecase";
+import { ListGroupsUseCase } from "@core/application/groups/usecases/list-groups.usecase";
+import { GetGroupUseCase } from "@core/application/groups/usecases/get-group.usecase";
+import { UpdateGroupUseCase } from "@core/application/groups/usecases/update-group.usecase";
+import { DeleteGroupUseCase } from "@core/application/groups/usecases/delete-group.usecase";
+import { EnrollStudentToGroupUseCase } from "@core/application/groups/usecases/enroll-student-to-group.usecase";
+import { CreateGroupDto } from "@core/application/groups/dto/create-group.dto";
+import { UpdateGroupDto } from "@core/application/groups/dto/update-group.dto";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { UserRole } from "@core/domain/users/user.entity";
 
-@Controller('groups')
-@UseGuards(JwtGuard, RolesGuard)
+@ApiTags("groups")
+@ApiBearerAuth()
+@Controller("groups")
 export class GroupsController {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly createGroupUseCase: CreateGroupUseCase,
+    private readonly listGroupsUseCase: ListGroupsUseCase,
+    private readonly getGroupUseCase: GetGroupUseCase,
+    private readonly updateGroupUseCase: UpdateGroupUseCase,
+    private readonly deleteGroupUseCase: DeleteGroupUseCase,
+    private readonly enrollStudentUseCase: EnrollStudentToGroupUseCase,
+  ) {}
+
+  @Post()
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @ApiOperation({ summary: "Create a new group" })
+  async create(@Body() dto: CreateGroupDto) {
+    return this.createGroupUseCase.execute(
+      dto.courseId,
+      dto.number,
+      dto.name,
+      dto.description,
+    );
+  }
 
   @Get()
-  async listUserGroups() {
-    const groups = await this.prisma.group.findMany({
-      include: {
-        course: true,
-        students: true,
-        challenges: true,
-      },
-    })
-    return groups
+  @ApiOperation({ summary: "List groups by course" })
+  async list(@Query("courseId") courseId: string) {
+    if (!courseId) {
+      throw new Error("courseId query parameter is required");
+    }
+    return this.listGroupsUseCase.execute(courseId);
   }
 
-  @Get(':id')
-  async getGroup(@Param('id') id: string) {
-    const group = await this.prisma.group.findUnique({
-      where: { id },
-      include: {
-        course: true,
-        students: true,
-        challenges: {
-          include: { testCases: true },
-        },
-      },
-    })
-    return group
+  @Get(":id")
+  @ApiOperation({ summary: "Get group by ID" })
+  async get(@Param("id") id: string) {
+    return this.getGroupUseCase.execute(id);
   }
 
-  @Get(':id/students')
-  async getGroupStudents(@Param('id') groupId: string) {
-    const students = await this.prisma.user.findMany({
-      where: {
-        groups: {
-          some: { id: groupId },
-        },
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-      },
-    })
-    return students
+  @Patch(":id")
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @ApiOperation({ summary: "Update group" })
+  async update(@Param("id") id: string, @Body() dto: UpdateGroupDto) {
+    return this.updateGroupUseCase.execute(id, dto);
   }
 
-  @Post(':id/students')
-  async addStudentToGroup(@Param('id') groupId: string, @Body() data: { studentId: string }) {
-    const group = await this.prisma.group.update({
-      where: { id: groupId },
-      data: {
-        students: {
-          connect: { id: data.studentId },
-        },
-      },
-      include: { students: true },
-    })
-    return group
+  @Delete(":id")
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @ApiOperation({ summary: "Delete group" })
+  async delete(@Param("id") id: string) {
+    await this.deleteGroupUseCase.execute(id);
+    return { message: "Grupo eliminado" };
+  }
+
+  @Post(":id/students")
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @ApiOperation({ summary: "Enroll student in group" })
+  async enrollStudent(
+    @Param("id") groupId: string,
+    @Body() body: { studentId: string },
+  ) {
+    await this.enrollStudentUseCase.execute(groupId, body.studentId);
+    return { message: "Estudiante inscrito en el grupo" };
   }
 }

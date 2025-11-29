@@ -7,6 +7,7 @@ import { GetEvaluationUseCase } from "@core/application/evaluations/usecases/get
 import { DeleteEvaluationUseCase } from "@core/application/evaluations/usecases/delete-evaluation.usecase";
 import { AddChallengeToEvaluationUseCase } from "@core/application/evaluations/usecases/add-challenge-to-evaluation.usecase";
 import { RemoveChallengeFromEvaluationUseCase } from "@core/application/evaluations/usecases/remove-challenge-from-evaluation.usecase";
+import { GetActiveEvaluationsUseCase } from "@core/application/evaluations/usecases/get-active-evaluations.usecase";
 import { CreateEvaluationDto, UpdateEvaluationDto, AddChallengeToEvaluationDto } from "@core/application/evaluations/dto/create-evaluation.dto";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
@@ -24,6 +25,7 @@ export class EvaluationsController {
     private readonly deleteEvaluationUseCase: DeleteEvaluationUseCase,
     private readonly addChallengeToEvaluationUseCase: AddChallengeToEvaluationUseCase,
     private readonly removeChallengeFromEvaluationUseCase: RemoveChallengeFromEvaluationUseCase,
+    private readonly getActiveEvaluationsUseCase: GetActiveEvaluationsUseCase,
   ) {}
 
   @Post()
@@ -39,6 +41,13 @@ export class EvaluationsController {
   @ApiResponse({ status: 200, description: "List of evaluations" })
   async list(@Query("courseId") courseId?: string) {
     return this.listEvaluationsUseCase.execute(courseId);
+  }
+
+  @Get("active")
+  @ApiOperation({ summary: "Get currently active evaluations" })
+  @ApiResponse({ status: 200, description: "List of active evaluations" })
+  async getActive(@Query("courseId") courseId?: string) {
+    return this.getActiveEvaluationsUseCase.execute(courseId);
   }
 
   @Get(":id")

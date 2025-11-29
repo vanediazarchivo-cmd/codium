@@ -92,17 +92,20 @@ export const authApi = {
 export const coursesApi = {
   list: () => ApiClient.get("/courses"),
   get: (id: string) => ApiClient.get(`/courses/${id}`),
+  getStudents: (courseId: string) => ApiClient.get(`/courses/${courseId}/students`),
   create: (data: any) => ApiClient.post("/courses", data),
   update: (id: string, data: any) => ApiClient.patch(`/courses/${id}`, data),
   delete: (id: string) => ApiClient.delete(`/courses/${id}`),
   enrollStudent: (courseId: string, studentId: string) =>
     ApiClient.post(`/courses/${courseId}/students`, { studentId }),
+  unenrollStudent: (courseId: string, studentId: string) =>
+    ApiClient.post(`/courses/${courseId}/students/${studentId}/unenroll`, {}),
 }
 
 // Challenges APIs
 export const challengesApi = {
-  list: (courseId?: string) => {
-    const query = courseId ? `?courseId=${courseId}` : ""
+  list: (groupId?: string) => {
+    const query = groupId ? `?groupId=${groupId}` : ""
     return ApiClient.get(`/challenges${query}`)
   },
   get: (id: string) => ApiClient.get(`/challenges/${id}`),
@@ -133,6 +136,10 @@ export const evaluationsApi = {
     const query = courseId ? `?courseId=${courseId}` : ""
     return ApiClient.get(`/evaluations${query}`)
   },
+  active: (courseId?: string) => {
+    const query = courseId ? `?courseId=${courseId}` : ""
+    return ApiClient.get(`/evaluations/active${query}`)
+  },
   get: (id: string) => ApiClient.get(`/evaluations/${id}`),
   create: (data: any) => ApiClient.post("/evaluations", data),
   update: (id: string, data: any) => ApiClient.patch(`/evaluations/${id}`, data),
@@ -159,6 +166,17 @@ export const usersApi = {
   list: () => ApiClient.get("/users"),
 }
 
+// Groups APIs
+export const groupsApi = {
+  list: (courseId: string) => ApiClient.get(`/groups?courseId=${courseId}`),
+  get: (id: string) => ApiClient.get(`/groups/${id}`),
+  create: (data: any) => ApiClient.post("/groups", data),
+  update: (id: string, data: any) => ApiClient.patch(`/groups/${id}`, data),
+  delete: (id: string) => ApiClient.delete(`/groups/${id}`),
+  enrollStudent: (groupId: string, studentId: string) =>
+    ApiClient.post(`/groups/${groupId}/students`, { studentId }),
+}
+
 // Export consolidated client
 export const apiClient = {
   authApi,
@@ -169,4 +187,5 @@ export const apiClient = {
   evaluationsApi,
   leaderboardsApi,
   usersApi,
+  groupsApi,
 }

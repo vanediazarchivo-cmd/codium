@@ -8,16 +8,23 @@ export class SubmissionPrismaRepository implements SubmissionRepositoryPort {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(submission: Submission): Promise<Submission> {
+    const createData: any = {
+      id: submission.id,
+      userId: submission.userId,
+      challengeId: submission.challengeId,
+      courseId: submission.courseId,
+      code: submission.code,
+      language: submission.language,
+      status: submission.status,
+    };
+
+    // Agregar evaluationId solo si está definido
+    if (submission.evaluationId) {
+      createData.evaluationId = submission.evaluationId;
+    }
+
     const created = await this.prisma.submission.create({
-      data: {
-        id: submission.id,
-        userId: submission.userId,
-        challengeId: submission.challengeId,
-        courseId: submission.courseId,
-        code: submission.code,
-        language: submission.language,
-        status: submission.status,
-      },
+      data: createData,
       include: { results: true },
     });
     return this.toDomain(created);
@@ -113,6 +120,7 @@ export class SubmissionPrismaRepository implements SubmissionRepositoryPort {
       userId: prismaSubmission.userId,
       challengeId: prismaSubmission.challengeId,
       courseId: prismaSubmission.courseId,
+      evaluationId: prismaSubmission.evaluationId || undefined,
       code: prismaSubmission.code,
       language: prismaSubmission.language as Language,
       status: prismaSubmission.status as SubmissionStatus,

@@ -13,10 +13,10 @@ export class CreateEvaluationDto {
   @IsString()
   description?: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: "ID del grupo" })
   @IsNotEmpty()
   @IsUUID()
-  courseId: string;
+  groupId: string;
 
   @ApiProperty({ type: String, example: "2025-01-15T10:00:00Z" })
   @IsNotEmpty()

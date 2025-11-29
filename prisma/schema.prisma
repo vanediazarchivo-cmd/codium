@@ -65,10 +65,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  submissions      Submission[]
-  coursesEnrolled  CourseStudent[]
-  coursesProfessor Course[]      @relation("CourseProfessors")
-  createdChallenges Challenge[]
+  submissions        Submission[]
+  groupsEnrolled     GroupStudent[]
+  coursesEnrolled    CourseStudent[]
+  coursesProfessor   Course[]       @relation("CourseProfessors")
+  createdChallenges  Challenge[]
 
   @@map("users")
 }
@@ -77,18 +78,47 @@ model Course {
   id        String   @id @default(uuid())
   name      String
   code      String   @unique
-  group     Int
   semester  String?  // e.g., "2024-II", "2025-I"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  professors   User[]       @relation("CourseProfessors")
-  students     CourseStudent[]
-  challenges   Challenge[]
-  submissions  Submission[]
-  evaluations  Evaluation[]
+  professors User[]       @relation("CourseProfessors")
+  groups     Group[]
+  createdBy  String? // Profesor que creó el curso
 
   @@map("courses")
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  courseId    String
+  number      Int      // 1, 2, 3, etc. (Grupo 01, Grupo 02)
+  name        String   // "Grupo 01", "Grupo 02", etc.
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  students    GroupStudent[]
+  challenges  Challenge[]
+  evaluations Evaluation[]
+  submissions Submission[]
+
+  @@unique([courseId, number])
+  @@index([courseId])
+  @@map("groups")
+}
+
+model GroupStudent {
+  groupId    String
+  studentId  String
+  enrolledAt DateTime @default(now())
+
+  group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, studentId])
+  @@map("group_students")
 }
 
 model CourseStudent {
@@ -112,16 +142,18 @@ model Challenge {
   timeLimit   Int             // milliseconds
   memoryLimit Int             // MB
   status      ChallengeStatus @default(DRAFT)
-  courseId    String
+  groupId     String
   createdById String
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
-  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdBy   User         @relation(fields: [createdById], references: [id])
-  testCases   TestCase[]
-  submissions Submission[]
+  group        Group                   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy    User                    @relation(fields: [createdById], references: [id])
+  testCases    TestCase[]
+  submissions  Submission[]
+  evaluations  EvaluationChallenge[]
 
+  @@index([groupId])
   @@map("challenges")
 }
 
@@ -144,7 +176,8 @@ model Submission {
   id           String           @id @default(uuid())
   userId       String
   challengeId  String
-  courseId     String
+  groupId      String
+  evaluationId String?          // Opcional: para entregas en evaluación
   code         String
   language     Language
   status       SubmissionStatus @default(QUEUED)
@@ -154,11 +187,14 @@ model Submission {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
-  user      User             @relation(fields: [userId], references: [id])
-  challenge Challenge        @relation(fields: [challengeId], references: [id])
-  course    Course           @relation(fields: [courseId], references: [id])
-  results   TestCaseResult[]
+  user       User              @relation(fields: [userId], references: [id])
+  challenge  Challenge         @relation(fields: [challengeId], references: [id])
+  group      Group             @relation(fields: [groupId], references: [id])
+  evaluation Evaluation?       @relation(fields: [evaluationId], references: [id], onDelete: SetNull)
+  results    TestCaseResult[]
 
+  @@index([evaluationId])
+  @@index([groupId])
   @@map("submissions")
 }
 
@@ -182,16 +218,18 @@ model Evaluation {
   id           String             @id @default(uuid())
   name         String
   description  String?
-  courseId     String
+  groupId      String
   status       EvaluationStatus   @default(DRAFT)
   startDate    DateTime
   endDate      DateTime
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
 
-  course     Course                   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  challenges EvaluationChallenge[]
+  group       Group                    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  challenges  EvaluationChallenge[]
+  submissions Submission[]
 
+  @@index([groupId])
   @@map("evaluations")
 }
 
@@ -202,7 +240,9 @@ model EvaluationChallenge {
   order         Int
 
   evaluation Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+  challenge  Challenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
 
   @@unique([evaluationId, challengeId])
+  @@index([challengeId])
   @@map("evaluation_challenges")
 }
