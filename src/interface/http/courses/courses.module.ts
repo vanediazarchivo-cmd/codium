@@ -7,8 +7,10 @@ import { EnrollStudentUseCase } from "@core/application/courses/usecases/enroll-
 import { ListCourseStudentsUseCase } from "@core/application/courses/usecases/list-course-students.usecase";
 import { UnenrollStudentUseCase } from "@core/application/courses/usecases/unenroll-student.usecase";
 import { COURSE_REPOSITORY } from "@core/domain/courses/course.repository.port";
+import { GROUP_REPOSITORY } from "@core/domain/groups/group.repository.port";
 import { USER_REPOSITORY } from "@core/domain/users/user.repository.port";
 import { CoursePrismaRepository } from "@infrastructure/database/prisma/course-prisma.repository";
+import { GroupPrismaRepository } from "@infrastructure/database/prisma/group-prisma.repository";
 import { UserPrismaRepository } from "@infrastructure/database/prisma/user-prisma.repository";
 import { PrismaService } from "@infrastructure/database/prisma.service";
 import { UsersModule } from "../users/users.module";
@@ -27,6 +29,10 @@ import { UsersModule } from "../users/users.module";
     {
       provide: COURSE_REPOSITORY,
       useClass: CoursePrismaRepository,
+    },
+    {
+      provide: GROUP_REPOSITORY,
+      useClass: GroupPrismaRepository,
     },
     {
       provide: USER_REPOSITORY,

@@ -14,7 +14,6 @@ export class CoursePrismaRepository implements CourseRepositoryPort {
         id: course.id,
         name: course.name,
         code: course.code,
-        group: course.group,
         createdAt: course.createdAt,
         updatedAt: course.updatedAt,
         professors: {
@@ -106,7 +105,6 @@ export class CoursePrismaRepository implements CourseRepositoryPort {
       id: prismaCourse.id,
       name: prismaCourse.name,
       code: prismaCourse.code,
-      group: prismaCourse.group,
       professorIds: prismaCourse.professors.map((p: any) => p.id),
       createdAt: prismaCourse.createdAt,
       updatedAt: prismaCourse.updatedAt,

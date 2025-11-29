@@ -100,7 +100,7 @@ export class LeaderboardService {
     if (!course) throw new NotFoundException("Course not found");
 
     const submissions = await this.prisma.submission.findMany({
-      where: { courseId },
+      where: { group: { courseId } },
       include: { user: true },
     });
 
@@ -158,12 +158,12 @@ export class LeaderboardService {
     // Obtener challenge IDs de la evaluación
     const challengeIds = await this.prisma.evaluationChallenge.findMany({
       where: { evaluationId },
-      select: { id: true },
+      select: { challengeId: true },
     });
 
     const submissions = await this.prisma.submission.findMany({
       where: {
-        challengeId: { in: challengeIds.map(ec => ec.id) },
+        challengeId: { in: challengeIds.map((ec) => ec.challengeId) },
       },
       include: { user: true },
     });

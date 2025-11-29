@@ -11,16 +11,7 @@ export class CreateCourseDto {
   @IsNotEmpty()
   @IsString()
   code: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  period: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  group: number;
+  // `code` funciona como NRC identificador del curso. No manejar `period/semester` aquí.
 
   @ApiProperty()
   @IsNotEmpty()

@@ -23,7 +23,6 @@ export class CreateCourseUseCase {
       id: uuidv4(),
       name: dto.name,
       code: dto.code,
-      group: dto.group,
       professorIds: [dto.professorId],
       createdAt: new Date(),
       updatedAt: new Date(),

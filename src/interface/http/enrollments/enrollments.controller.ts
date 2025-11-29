@@ -1,51 +1,59 @@
 import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common'
-import { JwtGuard } from '@/infrastructure/security/jwt.guard'
-import { RolesGuard } from '@/infrastructure/security/roles.guard'
-import { Roles } from '@/infrastructure/security/roles.decorator'
-import { PrismaService } from '@/infrastructure/database/prisma.service'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { RolesGuard } from '../auth/guards/roles.guard'
+import { Roles } from '../auth/decorators/roles.decorator'
+import { PrismaService } from '@infrastructure/database/prisma.service'
+import { UserRole } from '@core/domain/users/user.entity'
 
 @Controller('enrollments')
-@UseGuards(JwtGuard)
+@UseGuards(JwtAuthGuard)
 export class EnrollmentsController {
   constructor(private prisma: PrismaService) {}
 
   @Get()
   async getMyEnrollments(@Request() req: any) {
     const userId = req.user.id
+    // Obtener los cursos en los que el usuario está inscrito
     const enrollments = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        courses: {
+        coursesEnrolled: {
           include: {
-            professor: { select: { id: true, firstName: true, lastName: true } },
-            groups: { include: { students: true } },
+            course: {
+              include: {
+                professors: { select: { id: true, firstName: true, lastName: true } },
+                groups: { include: { students: true } },
+              },
+            },
           },
         },
       },
     })
-    return enrollments?.courses || []
+
+    return (enrollments?.coursesEnrolled || []).map((e: any) => e.course)
   }
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('STUDENT')
+  @Roles(UserRole.STUDENT)
   async enrollInCourse(@Request() req: any, @Body() data: { courseId: string }) {
     const userId = req.user.id
-    const enrollment = await this.prisma.course.update({
-      where: { id: data.courseId },
+    // Crear un registro en la tabla course_students
+    await this.prisma.courseStudent.create({
       data: {
-        students: {
-          connect: { id: userId },
-        },
-      },
-      include: {
-        students: true,
-        groups: { include: { students: true } },
+        courseId: data.courseId,
+        studentId: userId,
       },
     })
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: data.courseId },
+      include: { students: true, groups: { include: { students: true } } },
+    })
+
     return {
       message: 'Enrolled successfully',
-      course: enrollment,
+      course,
     }
   }
 }
