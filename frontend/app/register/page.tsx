@@ -49,7 +49,7 @@ export default function RegisterPage() {
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        role: formData.role as "STUDENT" | "PROFESSOR" | "ADMIN",
+        role: formData.role as "STUDENT" | "PROFESSOR",
       })
 
       router.push("/login?message=registration_successful")
