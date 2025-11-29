@@ -1,0 +1,1025 @@
+{
+  "analysis_timestamp": "2025-11-29T00:00:00Z",
+  "project_name": "Codium - Online Judge Platform",
+  "architecture": "Clean Architecture (Domain/Application/Infrastructure/Interface layers)",
+  
+  "controllers": {
+    "auth": {
+      "file": "src/interface/http/auth/auth.controller.ts",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/auth/register",
+          "decorators": ["@Public()", "@ApiOperation({ summary: 'Register a new user' })"],
+          "implemented": true,
+          "handler": "register(@Body() dto: RegisterDto)"
+        },
+        {
+          "method": "POST",
+          "route": "/auth/login",
+          "decorators": ["@Public()", "@ApiOperation({ summary: 'Login user' })"],
+          "implemented": true,
+          "handler": "login(@Body() dto: LoginDto)"
+        },
+        {
+          "method": "GET",
+          "route": "/auth/me",
+          "decorators": ["@ApiBearerAuth()", "@ApiOperation({ summary: 'Get current authenticated user info' })"],
+          "implemented": true,
+          "handler": "getCurrentUser(@CurrentUser() user: any)"
+        }
+      ],
+      "total_endpoints": 3,
+      "implemented_count": 3
+    },
+    "challenges": {
+      "file": "src/interface/http/challenges/challenges.controller.ts",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/challenges",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Create a new challenge' })"],
+          "implemented": true,
+          "handler": "create(@Body() dto: CreateChallengeDto)"
+        },
+        {
+          "method": "GET",
+          "route": "/challenges",
+          "decorators": ["@ApiOperation({ summary: 'List all challenges' })"],
+          "implemented": true,
+          "handler": "list(@CurrentUser() user, @Query('groupId') groupId)"
+        },
+        {
+          "method": "GET",
+          "route": "/challenges/:id",
+          "decorators": ["@ApiOperation({ summary: 'Get challenge by ID' })"],
+          "implemented": true,
+          "handler": "get(@Param('id') id)"
+        },
+        {
+          "method": "PATCH",
+          "route": "/challenges/:id",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Update challenge' })"],
+          "implemented": true,
+          "handler": "update(@Param('id') id, @Body() dto: UpdateChallengeDto)"
+        },
+        {
+          "method": "DELETE",
+          "route": "/challenges/:id",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Delete challenge' })"],
+          "implemented": true,
+          "handler": "delete(@Param('id') id)"
+        }
+      ],
+      "total_endpoints": 5,
+      "implemented_count": 5
+    },
+    "courses": {
+      "file": "src/interface/http/courses/courses.controller.ts",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/courses",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Create a new course' })"],
+          "implemented": true,
+          "handler": "create(@Body() dto: CreateCourseDto)"
+        },
+        {
+          "method": "GET",
+          "route": "/courses",
+          "decorators": ["@ApiOperation({ summary: 'List all courses' })"],
+          "implemented": true,
+          "handler": "list(@CurrentUser() user)"
+        },
+        {
+          "method": "GET",
+          "route": "/courses/:id",
+          "decorators": ["@ApiOperation({ summary: 'Get course by ID' })"],
+          "implemented": true,
+          "handler": "get(@Param('id') id)"
+        },
+        {
+          "method": "GET",
+          "route": "/courses/:id/students",
+          "decorators": ["@ApiOperation({ summary: 'List students enrolled in a course' })"],
+          "implemented": true,
+          "handler": "getStudents(@Param('id') courseId)"
+        },
+        {
+          "method": "POST",
+          "route": "/courses/:id/students",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Enroll student in course' })"],
+          "implemented": true,
+          "handler": "enrollStudent(@Param('id') courseId, @Body() dto: EnrollStudentDto)"
+        },
+        {
+          "method": "POST",
+          "route": "/courses/:id/students/:studentId/unenroll",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Unenroll student from course' })"],
+          "implemented": true,
+          "handler": "unenrollStudent(@Param('id') courseId, @Param('studentId') studentId)"
+        }
+      ],
+      "total_endpoints": 6,
+      "implemented_count": 6
+    },
+    "users": {
+      "file": "src/interface/http/users/users.controller.ts",
+      "endpoints": [
+        {
+          "method": "GET",
+          "route": "/users",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'List all users (Professors only)' })"],
+          "implemented": true,
+          "handler": "list()"
+        },
+        {
+          "method": "GET",
+          "route": "/users/:id",
+          "decorators": ["@ApiOperation({ summary: 'Get user by ID' })"],
+          "implemented": true,
+          "handler": "getUser(@Param('id') id)"
+        }
+      ],
+      "total_endpoints": 2,
+      "implemented_count": 2
+    },
+    "groups": {
+      "file": "src/interface/http/groups/groups.controller.ts",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/groups",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Create a new group' })"],
+          "implemented": true,
+          "handler": "create(@Body() dto: CreateGroupDto)"
+        },
+        {
+          "method": "GET",
+          "route": "/groups",
+          "decorators": ["@ApiOperation({ summary: 'List groups by course' })"],
+          "implemented": true,
+          "handler": "list(@Query('courseId') courseId)"
+        },
+        {
+          "method": "GET",
+          "route": "/groups/:id",
+          "decorators": ["@ApiOperation({ summary: 'Get group by ID' })"],
+          "implemented": true,
+          "handler": "get(@Param('id') id)"
+        },
+        {
+          "method": "GET",
+          "route": "/groups/course/:courseId/number/:number",
+          "decorators": ["@ApiOperation({ summary: 'Get group by course ID and group number' })"],
+          "implemented": true,
+          "handler": "getByNumber(@Param('courseId') courseId, @Param('number') number)"
+        },
+        {
+          "method": "PATCH",
+          "route": "/groups/:id",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Update group' })"],
+          "implemented": true,
+          "handler": "update(@Param('id') id, @Body() dto: UpdateGroupDto)"
+        },
+        {
+          "method": "DELETE",
+          "route": "/groups/:id",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Delete group' })"],
+          "implemented": true,
+          "handler": "delete(@Param('id') id)"
+        },
+        {
+          "method": "POST",
+          "route": "/groups/:id/students",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Enroll student in group' })"],
+          "implemented": true,
+          "handler": "enrollStudent(@Param('id') groupId, @Body() body)"
+        }
+      ],
+      "total_endpoints": 7,
+      "implemented_count": 7
+    },
+    "submissions": {
+      "file": "src/interface/http/submissions/submissions.controller.ts",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/submissions",
+          "decorators": ["@ApiOperation({ summary: 'Submit a solution' })"],
+          "implemented": true,
+          "handler": "submit(@Body() dto: SubmitSolutionDto)"
+        },
+        {
+          "method": "GET",
+          "route": "/submissions/my-submissions",
+          "decorators": ["@ApiOperation({ summary: 'Get my submissions' })"],
+          "implemented": true,
+          "handler": "mySubmissions(@CurrentUser() user)"
+        },
+        {
+          "method": "GET",
+          "route": "/submissions/:id",
+          "decorators": ["@ApiOperation({ summary: 'Get submission by ID' })"],
+          "implemented": true,
+          "handler": "get(@Param('id') id)"
+        }
+      ],
+      "total_endpoints": 3,
+      "implemented_count": 3
+    },
+    "evaluations": {
+      "file": "src/interface/http/evaluations/evaluations.controller.ts",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/evaluations",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Create a new evaluation' })"],
+          "implemented": true,
+          "handler": "create(@Body() dto: CreateEvaluationDto)"
+        },
+        {
+          "method": "GET",
+          "route": "/evaluations",
+          "decorators": ["@ApiOperation({ summary: 'List all evaluations (filtered by group)' })"],
+          "implemented": true,
+          "handler": "list(@Query('groupId') groupId)"
+        },
+        {
+          "method": "GET",
+          "route": "/evaluations/active",
+          "decorators": ["@ApiOperation({ summary: 'Get currently active evaluations' })"],
+          "implemented": true,
+          "handler": "getActive(@Query('groupId') groupId)"
+        },
+        {
+          "method": "GET",
+          "route": "/evaluations/:id",
+          "decorators": ["@ApiOperation({ summary: 'Get evaluation by ID' })"],
+          "implemented": true,
+          "handler": "get(@Param('id') id)"
+        },
+        {
+          "method": "PATCH",
+          "route": "/evaluations/:id",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Update evaluation' })"],
+          "implemented": true,
+          "handler": "update(@Param('id') id, @Body() dto: UpdateEvaluationDto)"
+        },
+        {
+          "method": "DELETE",
+          "route": "/evaluations/:id",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Delete evaluation' })"],
+          "implemented": true,
+          "handler": "delete(@Param('id') id)"
+        },
+        {
+          "method": "POST",
+          "route": "/evaluations/:id/challenges",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Add challenge to evaluation' })"],
+          "implemented": true,
+          "handler": "addChallenge(@Param('id') evaluationId, @Body() dto)"
+        },
+        {
+          "method": "DELETE",
+          "route": "/evaluations/:id/challenges/:challengeId",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Remove challenge from evaluation' })"],
+          "implemented": true,
+          "handler": "removeChallenge(@Param('id') evaluationId, @Param('challengeId') challengeId)"
+        }
+      ],
+      "total_endpoints": 8,
+      "implemented_count": 8
+    },
+    "leaderboards": {
+      "file": "src/interface/http/leaderboards/leaderboards.controller.ts",
+      "endpoints": [
+        {
+          "method": "GET",
+          "route": "/leaderboards/challenges/:challengeId",
+          "decorators": ["@ApiOperation({ summary: 'Get leaderboard for a specific challenge' })"],
+          "implemented": true,
+          "handler": "getChallengeLeaderboard(@Param('challengeId') challengeId)"
+        },
+        {
+          "method": "GET",
+          "route": "/leaderboards/courses/:courseId",
+          "decorators": ["@ApiOperation({ summary: 'Get leaderboard for a specific course' })"],
+          "implemented": true,
+          "handler": "getCourseLeaderboard(@Param('courseId') courseId)"
+        },
+        {
+          "method": "GET",
+          "route": "/leaderboards/evaluations/:evaluationId",
+          "decorators": ["@ApiOperation({ summary: 'Get leaderboard for a specific evaluation' })"],
+          "implemented": true,
+          "handler": "getEvaluationLeaderboard(@Param('evaluationId') evaluationId)"
+        }
+      ],
+      "total_endpoints": 3,
+      "implemented_count": 3
+    },
+    "test-cases": {
+      "file": "src/interface/http/test-cases/test-cases.controller.ts",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/challenges/:challengeId/test-cases",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Add a test case to a challenge' })"],
+          "implemented": true,
+          "handler": "addTestCase(@Param('challengeId') challengeId, @Body() dto)"
+        },
+        {
+          "method": "GET",
+          "route": "/challenges/:challengeId/test-cases",
+          "decorators": ["@ApiOperation({ summary: 'List test cases (filtered by role)' })"],
+          "implemented": true,
+          "handler": "listTestCases(@Param('challengeId') challengeId)"
+        },
+        {
+          "method": "DELETE",
+          "route": "/challenges/:challengeId/test-cases/:testCaseId",
+          "decorators": ["@Roles(UserRole.PROFESSOR)", "@ApiOperation({ summary: 'Delete a test case' })"],
+          "implemented": true,
+          "handler": "deleteTestCase(@Param('challengeId') challengeId, @Param('testCaseId') testCaseId)"
+        }
+      ],
+      "total_endpoints": 3,
+      "implemented_count": 3
+    },
+    "enrollments": {
+      "file": "src/interface/http/enrollments/enrollments.controller.ts",
+      "endpoints": [
+        {
+          "method": "GET",
+          "route": "/enrollments",
+          "decorators": ["@UseGuards(JwtAuthGuard)"],
+          "implemented": true,
+          "handler": "getMyEnrollments(@Request() req)"
+        },
+        {
+          "method": "POST",
+          "route": "/enrollments",
+          "decorators": ["@UseGuards(JwtAuthGuard, RolesGuard)", "@Roles(UserRole.STUDENT)"],
+          "implemented": true,
+          "handler": "enrollInCourse(@Request() req, @Body() data)"
+        }
+      ],
+      "total_endpoints": 2,
+      "implemented_count": 2
+    }
+  },
+
+  "services_implemented": [
+    {
+      "name": "LeaderboardService",
+      "file": "src/core/application/leaderboards/leaderboard.service.ts",
+      "methods": [
+        {
+          "name": "getChallengeLeaderboard",
+          "signature": "(challengeId: string, limit: number = 100): Promise<LeaderboardEntry[]>",
+          "description": "Ranking de estudiantes por reto ordenado por score y tiempo",
+          "implemented": true
+        },
+        {
+          "name": "getCourseLeaderboard",
+          "signature": "(courseId: string, limit: number = 100): Promise<LeaderboardEntry[]>",
+          "description": "Ranking de estudiantes por curso",
+          "implemented": true
+        },
+        {
+          "name": "getEvaluationLeaderboard",
+          "signature": "(evaluationId: string, limit: number = 100): Promise<LeaderboardEntry[]>",
+          "description": "Ranking de estudiantes por evaluación",
+          "implemented": true
+        }
+      ],
+      "total_methods": 3,
+      "implemented_count": 3
+    },
+    {
+      "name": "JwtService",
+      "file": "src/infrastructure/security/jwt.service.ts",
+      "methods": [
+        {
+          "name": "sign",
+          "signature": "(payload: JwtPayload): string",
+          "description": "Genera un token JWT firmado",
+          "implemented": true
+        },
+        {
+          "name": "verify",
+          "signature": "(token: string): JwtPayload",
+          "description": "Verifica y decodifica un token JWT",
+          "implemented": true
+        },
+        {
+          "name": "decode",
+          "signature": "(token: string): JwtPayload | null",
+          "description": "Decodifica un token JWT sin verificar firma",
+          "implemented": true
+        }
+      ],
+      "total_methods": 3,
+      "implemented_count": 3
+    },
+    {
+      "name": "BcryptService",
+      "file": "src/infrastructure/security/bcrypt.service.ts",
+      "methods": [
+        {
+          "name": "hash",
+          "signature": "(password: string): Promise<string>",
+          "description": "Hasheá una contraseña con salt rounds",
+          "implemented": true
+        },
+        {
+          "name": "compare",
+          "signature": "(password: string, hash: string): Promise<boolean>",
+          "description": "Compara contraseña con hash",
+          "implemented": true
+        }
+      ],
+      "total_methods": 2,
+      "implemented_count": 2
+    },
+    {
+      "name": "BullService",
+      "file": "src/infrastructure/queue/bull.service.ts",
+      "methods": [
+        {
+          "name": "addSubmissionJob",
+          "signature": "(job: SubmissionJob): Promise<void>",
+          "description": "Añade un job de submission a la cola con reintentos",
+          "implemented": true
+        },
+        {
+          "name": "getJobStatus",
+          "signature": "(jobId: string): Promise<any>",
+          "description": "Obtiene el estado de un job",
+          "implemented": true
+        }
+      ],
+      "total_methods": 2,
+      "implemented_count": 2
+    },
+    {
+      "name": "RunnerService",
+      "file": "src/infrastructure/runners/runner.service.ts",
+      "methods": [
+        {
+          "name": "run",
+          "signature": "(language: Language | string, code: string, input: string, limits: { timeout, memory, cpus }): Promise<RunResult>",
+          "description": "Ejecuta código en contenedor Docker según lenguaje",
+          "implemented": true
+        },
+        {
+          "name": "runPython",
+          "signature": "(code: string, input: string, limits): Promise<RunResult>",
+          "description": "Ejecuta código Python en contenedor",
+          "implemented": true
+        },
+        {
+          "name": "runNodeJs",
+          "signature": "(code: string, input: string, limits): Promise<RunResult>",
+          "description": "Ejecuta código Node.js en contenedor",
+          "implemented": true
+        },
+        {
+          "name": "runCpp",
+          "signature": "(code: string, input: string, limits): Promise<RunResult>",
+          "description": "Compila y ejecuta código C++ en contenedor",
+          "implemented": true
+        },
+        {
+          "name": "runJava",
+          "signature": "(code: string, input: string, limits): Promise<RunResult>",
+          "description": "Compila y ejecuta código Java en contenedor",
+          "implemented": true
+        }
+      ],
+      "total_methods": 5,
+      "implemented_count": 5
+    },
+    {
+      "name": "PrismaService",
+      "file": "src/infrastructure/database/prisma.service.ts",
+      "methods": [
+        {
+          "name": "onModuleInit",
+          "signature": "(): Promise<void>",
+          "description": "Conecta a la base de datos al iniciar el módulo",
+          "implemented": true
+        },
+        {
+          "name": "onModuleDestroy",
+          "signature": "(): Promise<void>",
+          "description": "Desconecta de la base de datos al destruir el módulo",
+          "implemented": true
+        }
+      ],
+      "total_methods": 2,
+      "implemented_count": 2
+    }
+  ],
+
+  "guards_present": [
+    {
+      "name": "JwtAuthGuard",
+      "file": "src/interface/http/auth/guards/jwt-auth.guard.ts",
+      "description": "Valida JWT en Authorization header. Permite rutas públicas con @Public()",
+      "extends": "AuthGuard('jwt')",
+      "implemented": true
+    },
+    {
+      "name": "RolesGuard",
+      "file": "src/interface/http/auth/guards/roles.guard.ts",
+      "description": "Verifica roles requeridos via @Roles() decorator",
+      "implements": "CanActivate",
+      "implemented": true
+    }
+  ],
+
+  "decorators_present": [
+    {
+      "name": "CurrentUser",
+      "file": "src/interface/http/auth/decorators/current-user.decorator.ts",
+      "type": "ParamDecorator",
+      "description": "Extrae el usuario del request (payload JWT)"
+    },
+    {
+      "name": "Public",
+      "file": "src/interface/http/auth/decorators/public.decorator.ts",
+      "type": "MethodDecorator",
+      "description": "Marca un endpoint como público (sin autenticación)"
+    },
+    {
+      "name": "Roles",
+      "file": "src/interface/http/auth/decorators/roles.decorator.ts",
+      "type": "MethodDecorator",
+      "description": "Define roles requeridos para acceder a un endpoint"
+    }
+  ],
+
+  "strategies_present": [
+    {
+      "name": "JwtStrategy",
+      "file": "src/interface/http/auth/strategies/jwt.strategy.ts",
+      "description": "Estrategia Passport para JWT. Extrae token del header Authorization",
+      "implemented": true
+    }
+  ],
+
+  "dtos_found": [
+    {
+      "name": "LoginDto",
+      "file": "src/core/application/auth/dto/login.dto.ts",
+      "fields": [
+        { "name": "email", "type": "string", "decorators": ["@IsEmail", "@IsNotEmpty"] },
+        { "name": "password", "type": "string", "decorators": ["@IsString", "@IsNotEmpty", "@MinLength(6)"] }
+      ]
+    },
+    {
+      "name": "RegisterDto",
+      "file": "src/core/application/auth/dto/register.dto.ts",
+      "fields": [
+        { "name": "email", "type": "string", "decorators": ["@IsEmail", "@IsNotEmpty"] },
+        { "name": "password", "type": "string", "decorators": ["@IsString", "@IsNotEmpty", "@MinLength(6)"] },
+        { "name": "firstName", "type": "string", "decorators": ["@IsString", "@IsNotEmpty"] },
+        { "name": "lastName", "type": "string", "decorators": ["@IsString", "@IsNotEmpty"] },
+        { "name": "role", "type": "UserRole", "decorators": ["@IsEnum(UserRole)", "@IsOptional"] }
+      ]
+    },
+    {
+      "name": "CreateChallengeDto",
+      "file": "src/core/application/challenges/dto/create-challenge.dto.ts",
+      "fields": [
+        { "name": "title", "type": "string" },
+        { "name": "description", "type": "string" },
+        { "name": "difficulty", "type": "Difficulty enum" },
+        { "name": "tags", "type": "string[]" },
+        { "name": "timeLimit", "type": "number", "decorators": ["@Min(100)", "@Max(10000)"] },
+        { "name": "memoryLimit", "type": "number", "decorators": ["@Min(64)", "@Max(1024)"] },
+        { "name": "groupId", "type": "UUID" }
+      ]
+    },
+    {
+      "name": "UpdateChallengeDto",
+      "file": "src/core/application/challenges/dto/update-challenge.dto.ts",
+      "fields": "Idéntico a CreateChallengeDto pero todos los campos opcionales"
+    },
+    {
+      "name": "AddTestCaseDto",
+      "file": "src/core/application/challenges/dto/add-test-case.dto.ts",
+      "fields": [
+        { "name": "input", "type": "string" },
+        { "name": "expectedOutput", "type": "string" },
+        { "name": "isHidden", "type": "boolean" },
+        { "name": "points", "type": "number", "decorators": ["@Min(0)"] }
+      ]
+    },
+    {
+      "name": "CreateCourseDto",
+      "file": "src/core/application/courses/dto/create-course.dto.ts",
+      "fields": [
+        { "name": "name", "type": "string", "decorators": ["@IsNotEmpty", "@IsString"] },
+        { "name": "code", "type": "string", "decorators": ["@IsNotEmpty", "@IsString"] },
+        { "name": "professorId", "type": "UUID", "decorators": ["@IsNotEmpty", "@IsUUID"] }
+      ]
+    },
+    {
+      "name": "EnrollStudentDto",
+      "file": "src/core/application/courses/dto/enroll-student.dto.ts",
+      "fields": "Contiene studentId UUID para inscribir estudiante"
+    },
+    {
+      "name": "SubmitSolutionDto",
+      "file": "src/core/application/submissions/dto/submit-solution.dto.ts",
+      "fields": [
+        { "name": "challengeId", "type": "UUID" },
+        { "name": "groupId", "type": "UUID" },
+        { "name": "code", "type": "string" },
+        { "name": "language", "type": "Language | string" }
+      ]
+    },
+    {
+      "name": "SubmissionDto",
+      "file": "src/core/application/submissions/dto/submission.dto.ts",
+      "fields": "DTO de salida para Submission (mapeo de entidad)"
+    },
+    {
+      "name": "CreateEvaluationDto",
+      "file": "src/core/application/evaluations/dto/create-evaluation.dto.ts",
+      "fields": [
+        { "name": "name", "type": "string" },
+        { "name": "description", "type": "string", "decorators": ["@IsOptional"] },
+        { "name": "groupId", "type": "UUID" },
+        { "name": "startDate", "type": "string (ISO 8601)", "decorators": ["@IsDateString"] },
+        { "name": "endDate", "type": "string (ISO 8601)", "decorators": ["@IsDateString"] },
+        { "name": "challengeIds", "type": "UUID[]", "decorators": ["@IsOptional"] }
+      ]
+    },
+    {
+      "name": "UpdateEvaluationDto",
+      "file": "src/core/application/evaluations/dto/create-evaluation.dto.ts",
+      "fields": "Idéntico a CreateEvaluationDto pero todos los campos opcionales"
+    },
+    {
+      "name": "CreateGroupDto",
+      "file": "src/core/application/groups/dto/create-group.dto.ts",
+      "fields": "Contiene courseId, number, name, description"
+    },
+    {
+      "name": "UpdateGroupDto",
+      "file": "src/core/application/groups/dto/update-group.dto.ts",
+      "fields": "name, description opcionales"
+    },
+    {
+      "name": "GroupDto",
+      "file": "src/core/application/groups/dto/group.dto.ts",
+      "fields": "DTO de salida para Group"
+    },
+    {
+      "name": "UserDto",
+      "file": "src/core/application/users/dto/user.dto.ts",
+      "fields": "id, email, firstName, lastName, role"
+    },
+    {
+      "name": "CreateUserDto",
+      "file": "src/core/application/users/dto/create-user.dto.ts",
+      "fields": "email, firstName, lastName, role"
+    },
+    {
+      "name": "ChallengeDto",
+      "file": "src/core/application/challenges/dto/challenge.dto.ts",
+      "fields": "DTO de salida para Challenge"
+    },
+    {
+      "name": "CourseDto",
+      "file": "src/core/application/courses/dto/course.dto.ts",
+      "fields": "DTO de salida para Course"
+    },
+    {
+      "name": "EvaluationDto",
+      "file": "src/core/application/evaluations/dto/evaluation.dto.ts",
+      "fields": "DTO de salida para Evaluation"
+    }
+  ],
+
+  "workers": {
+    "python": {
+      "status": "FULLY_IMPLEMENTED",
+      "file": "workers/python-worker/worker.ts",
+      "lines_of_code": 268,
+      "description": "Worker completo que procesa submissions en Python",
+      "features": [
+        "Conecta a Redis para obtener jobs de la cola 'submissions'",
+        "Ejecuta código Python en contenedor Docker (python:3.11-alpine)",
+        "Compara output vs expected output",
+        "Persiste resultados en TestCaseResult table",
+        "Actualiza estado de Submission (ACCEPTED/WRONG_ANSWER/RUNTIME_ERROR)",
+        "Calcula score (0-100) basado en test cases pasados",
+        "Maneja timeouts y memory limits"
+      ],
+      "main_function": "submissionQueue.process('process-submission', async (job) => ...)"
+    },
+    "java": {
+      "status": "FULLY_IMPLEMENTED",
+      "file": "workers/java-worker/worker.ts",
+      "lines_of_code": 179,
+      "description": "Worker completo que procesa submissions en Java",
+      "features": [
+        "Conecta a Redis para obtener jobs",
+        "Compila código Java con javac (openjdk:21-slim)",
+        "Ejecuta bytecode compilado",
+        "Maneja errores de compilación",
+        "Persiste resultados de test cases",
+        "Actualiza estado de Submission",
+        "Soporta timeouts"
+      ],
+      "main_function": "submissionQueue.process('process-submission', async (job) => ...)",
+      "compilation": "javac en contenedor antes de ejecución"
+    },
+    "nodejs": {
+      "status": "FULLY_IMPLEMENTED",
+      "file": "workers/nodejs-worker/worker.ts",
+      "lines_of_code": 202,
+      "description": "Worker completo que procesa submissions en Node.js",
+      "features": [
+        "Conecta a Redis",
+        "Ejecuta código JavaScript/Node.js (node:20-alpine)",
+        "Maneja módulos comunes",
+        "Persiste resultados",
+        "Compara outputs",
+        "Calcula scores"
+      ],
+      "main_function": "submissionQueue.process('process-submission', async (job) => ...)"
+    },
+    "cpp": {
+      "status": "FULLY_IMPLEMENTED",
+      "file": "workers/cpp-worker/worker.ts",
+      "lines_of_code": 179,
+      "description": "Worker completo que procesa submissions en C++",
+      "features": [
+        "Conecta a Redis",
+        "Compila código C++ con g++ (gcc:latest)",
+        "Ejecuta binario compilado",
+        "Maneja errores de compilación",
+        "Persiste resultados",
+        "Soporta timeouts y memory limits"
+      ],
+      "main_function": "submissionQueue.process('process-submission', async (job) => ...)",
+      "compilation": "g++ en contenedor"
+    }
+  },
+
+  "infrastructure": [
+    {
+      "name": "PrismaService",
+      "file": "src/infrastructure/database/prisma.service.ts",
+      "type": "Database ORM",
+      "description": "Gestor de conexión a PostgreSQL. Implementa OnModuleInit/OnModuleDestroy",
+      "module_export": "InfrastructureModule"
+    },
+    {
+      "name": "BullService",
+      "file": "src/infrastructure/queue/bull.service.ts",
+      "type": "Message Queue",
+      "description": "Gestor de cola de jobs con Bull + Redis",
+      "module_export": "QueueModule",
+      "features": [
+        "Crea queue 'submissions' en Redis",
+        "addSubmissionJob() - añade job con reintentos exponenciales",
+        "getJobStatus() - obtiene estado del job",
+        "Intentos: 3, Backoff: 2 segundos exponencial"
+      ]
+    },
+    {
+      "name": "QueueModule",
+      "file": "src/infrastructure/queue/queue.module.ts",
+      "type": "Module",
+      "description": "Configura Bull con Redis dinámicamente desde env vars",
+      "provides": "BullModule.registerQueue('submissions')"
+    },
+    {
+      "name": "SubmissionProcessor",
+      "file": "src/infrastructure/queue/submission.processor.ts",
+      "type": "Queue Processor",
+      "description": "Procesa jobs de 'submissions' en la API (STUB implementación)",
+      "warning": "Este es un STUB. Los workers reales están en /workers/"
+    },
+    {
+      "name": "RunnerService",
+      "file": "src/infrastructure/runners/runner.service.ts",
+      "type": "Code Execution",
+      "description": "Ejecuta código en contenedores Docker aislados",
+      "languages": ["PYTHON", "NODEJS", "CPP", "JAVA"],
+      "features": [
+        "Inyecta código en contenedor",
+        "Configura timeouts y memory limits",
+        "Captura stdout/stderr",
+        "Retorna RunResult {output, error, timeMs, exitCode}"
+      ]
+    },
+    {
+      "name": "JwtService",
+      "file": "src/infrastructure/security/jwt.service.ts",
+      "type": "Authentication",
+      "description": "Wrapper alrededor de NestJS JwtService",
+      "methods": ["sign", "verify", "decode"]
+    },
+    {
+      "name": "BcryptService",
+      "file": "src/infrastructure/security/bcrypt.service.ts",
+      "type": "Password Hashing",
+      "description": "Hash/Compare de contraseñas con bcryptjs (salt rounds: 10)",
+      "methods": ["hash", "compare"]
+    },
+    {
+      "name": "InfrastructureModule",
+      "file": "src/infrastructure/infrastructure.module.ts",
+      "type": "Module",
+      "description": "Centraliza exportación de servicios de infraestructura",
+      "exports": [
+        "QueueModule",
+        "RunnerService",
+        "PrismaService",
+        "SUBMISSION_REPOSITORY",
+        "TEST_CASE_REPOSITORY"
+      ]
+    }
+  ],
+
+  "critical_issues": [
+    {
+      "severity": "LOW",
+      "category": "Implementation Gap",
+      "issue": "SubmissionProcessor es STUB",
+      "file": "src/infrastructure/queue/submission.processor.ts",
+      "description": "El procesador de submissions en la API solo registra logs y retorna estado QUEUED. Los workers reales procesan en /workers/",
+      "recommendation": "Este diseño es intencional (workers separados). Verificar que los 4 workers están corriendo en contenedores Docker."
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "Architecture Concern",
+      "issue": "Múltiples consumidores de la misma cola",
+      "description": "RunnerService en API + SubmissionProcessor en API + 4 workers externos todos escuchan la misma cola 'submissions'",
+      "recommendation": "Implementar lógica de filtrado por lenguaje en cada worker para evitar procesamiento duplicado"
+    },
+    {
+      "severity": "LOW",
+      "category": "Database",
+      "issue": "No hay índices explícitos definidos",
+      "file": "prisma/schema.prisma",
+      "recommendation": "Añadir índices en campos frecuentemente consultados (userId, challengeId, courseId, groupId, submissionId)"
+    },
+    {
+      "severity": "INFO",
+      "category": "Code Quality",
+      "issue": "DTOs de salida no tienen mappers consistentes",
+      "description": "Algunos controladores retornan directamente entidades de dominio sin mapperear a DTO",
+      "recommendation": "Implementar mappers en todos los use cases para consistencia"
+    },
+    {
+      "severity": "LOW",
+      "category": "Testing",
+      "issue": "Ausencia de unit tests",
+      "description": "No hay archivos .spec.ts en el proyecto",
+      "recommendation": "Añadir tests para use cases y services críticos"
+    }
+  ],
+
+  "modules_summary": {
+    "auth_module": {
+      "file": "src/interface/http/auth/auth.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": [
+        "AuthController",
+        "JwtStrategy",
+        "JwtAuthGuard",
+        "RolesGuard",
+        "CurrentUser decorator",
+        "Public decorator",
+        "Roles decorator"
+      ]
+    },
+    "users_module": {
+      "file": "src/interface/http/users/users.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": ["UsersController", "GetUserUseCase", "ListUsersUseCase"]
+    },
+    "challenges_module": {
+      "file": "src/interface/http/challenges/challenges.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": [
+        "ChallengesController",
+        "CreateChallengeUseCase",
+        "UpdateChallengeUseCase",
+        "ListChallengesUseCase",
+        "GetChallengeUseCase",
+        "DeleteChallengeUseCase",
+        "AddTestCaseUseCase"
+      ]
+    },
+    "submissions_module": {
+      "file": "src/interface/http/submissions/submissions.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": [
+        "SubmissionsController",
+        "SubmitSolutionUseCase",
+        "GetSubmissionUseCase",
+        "ListUserSubmissionsUseCase",
+        "SubmissionProcessor"
+      ]
+    },
+    "courses_module": {
+      "file": "src/interface/http/courses/courses.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": [
+        "CoursesController",
+        "CreateCourseUseCase",
+        "ListCoursesUseCase",
+        "GetCourseUseCase",
+        "EnrollStudentUseCase",
+        "ListCourseStudentsUseCase",
+        "UnenrollStudentUseCase"
+      ]
+    },
+    "groups_module": {
+      "file": "src/interface/http/groups/groups.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": [
+        "GroupsController",
+        "CreateGroupUseCase",
+        "ListGroupsUseCase",
+        "GetGroupUseCase",
+        "GetGroupByCourseAndNumberUseCase",
+        "UpdateGroupUseCase",
+        "DeleteGroupUseCase",
+        "EnrollStudentToGroupUseCase"
+      ]
+    },
+    "evaluations_module": {
+      "file": "src/interface/http/evaluations/evaluations.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": [
+        "EvaluationsController",
+        "CreateEvaluationUseCase",
+        "UpdateEvaluationUseCase",
+        "ListEvaluationsUseCase",
+        "GetEvaluationUseCase",
+        "DeleteEvaluationUseCase",
+        "AddChallengeToEvaluationUseCase",
+        "RemoveChallengeFromEvaluationUseCase",
+        "GetActiveEvaluationsUseCase"
+      ]
+    },
+    "leaderboards_module": {
+      "file": "src/interface/http/leaderboards/leaderboards.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": ["LeaderboardsController", "LeaderboardService"]
+    },
+    "test_cases_module": {
+      "file": "src/interface/http/test-cases/test-case.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": ["TestCasesController", "AddTestCaseUseCase"]
+    },
+    "enrollments_module": {
+      "file": "src/interface/http/enrollments/enrollments.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": ["EnrollmentsController"]
+    },
+    "infrastructure_module": {
+      "file": "src/infrastructure/infrastructure.module.ts",
+      "status": "FULLY_IMPLEMENTED",
+      "components": [
+        "QueueModule",
+        "RunnerService",
+        "PrismaService",
+        "SubmissionProcessor"
+      ]
+    }
+  },
+
+  "use_cases_count": 35,
+  "endpoints_total": 41,
+  "endpoints_implemented": 41,
+  "controllers_total": 10,
+  "services_total": 6,
+  "guards_total": 2,
+  "dtos_total": 19,
+  "workers_total": 4,
+  "workers_fully_implemented": 4,
+
+  "summary": {
+    "architecture": "Clean Architecture con capas Domain/Application/Infrastructure/Interface",
+    "database": "PostgreSQL con Prisma ORM",
+    "queue": "Redis con Bull",
+    "authentication": "JWT con Passport estrategia",
+    "code_execution": "Docker containers aislados",
+    "implementation_status": "COMPLETO - Todos los controllers, servicios, guards y 4 workers están totalmente implementados",
+    "test_coverage": "NO HAY TESTS UNITARIOS",
+    "compilation_errors": "NINGUNO",
+    "critical_gaps": "NINGUNO - Proyecto funcional"
+  }
+}

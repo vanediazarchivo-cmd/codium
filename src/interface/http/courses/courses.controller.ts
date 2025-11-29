@@ -1,12 +1,15 @@
-import { Controller, Get, Post, Param, Body } from "@nestjs/common";
+import { Controller, Get, Post, Patch, Delete, Param, Body } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiBearerAuth } from "@nestjs/swagger";
 import { CreateCourseUseCase } from "@core/application/courses/usecases/create-course.usecase";
 import { ListCoursesUseCase } from "@core/application/courses/usecases/list-courses.usecase";
 import { GetCourseUseCase } from "@core/application/courses/usecases/get-course.usecase";
+import { UpdateCourseUseCase } from "@core/application/courses/usecases/update-course.usecase";
+import { DeleteCourseUseCase } from "@core/application/courses/usecases/delete-course.usecase";
 import { EnrollStudentUseCase } from "@core/application/courses/usecases/enroll-student.usecase";
 import { ListCourseStudentsUseCase } from "@core/application/courses/usecases/list-course-students.usecase";
 import { UnenrollStudentUseCase } from "@core/application/courses/usecases/unenroll-student.usecase";
 import { CreateCourseDto } from "@core/application/courses/dto/create-course.dto";
+import { UpdateCourseDto } from "@core/application/courses/dto/update-course.dto";
 import { EnrollStudentDto } from "@core/application/courses/dto/enroll-student.dto";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
@@ -20,6 +23,8 @@ export class CoursesController {
     private readonly createCourseUseCase: CreateCourseUseCase,
     private readonly listCoursesUseCase: ListCoursesUseCase,
     private readonly getCourseUseCase: GetCourseUseCase,
+    private readonly updateCourseUseCase: UpdateCourseUseCase,
+    private readonly deleteCourseUseCase: DeleteCourseUseCase,
     private readonly enrollStudentUseCase: EnrollStudentUseCase,
     private readonly listCourseStudentsUseCase: ListCourseStudentsUseCase,
     private readonly unenrollStudentUseCase: UnenrollStudentUseCase,
@@ -42,6 +47,20 @@ export class CoursesController {
   @ApiOperation({ summary: 'Get course by ID' })
   async get(@Param('id') id: string, @CurrentUser() user: any) {
     return this.getCourseUseCase.execute(id, user.id, user.role);
+  }
+
+  @Patch(':id')
+  @Roles(UserRole.PROFESSOR)
+  @ApiOperation({ summary: "Update a course" })
+  async update(@Param('id') courseId: string, @Body() dto: UpdateCourseDto, @CurrentUser() user: any) {
+    return this.updateCourseUseCase.execute(courseId, dto, user.role);
+  }
+
+  @Delete(':id')
+  @Roles(UserRole.PROFESSOR)
+  @ApiOperation({ summary: "Delete a course" })
+  async delete(@Param('id') courseId: string, @CurrentUser() user: any) {
+    return this.deleteCourseUseCase.execute(courseId, user.role);
   }
 
   @Get(':id/students')

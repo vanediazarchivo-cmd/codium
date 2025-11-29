@@ -50,11 +50,11 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
       args:
-        NEXT_PUBLIC_API_URL: http://api:3000/api
+        NEXT_PUBLIC_API_URL: http://localhost:3000/api
     container_name: codium-frontend
-    ports: ["3001:3001"]
+    ports: ["3001:3000"]
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_API_URL: http://localhost:3000/api
     depends_on:
       - api
     networks: ["codium-network"]

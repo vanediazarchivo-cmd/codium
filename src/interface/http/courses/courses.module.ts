@@ -3,6 +3,8 @@ import { CoursesController } from "./courses.controller";
 import { CreateCourseUseCase } from "@core/application/courses/usecases/create-course.usecase";
 import { ListCoursesUseCase } from "@core/application/courses/usecases/list-courses.usecase";
 import { GetCourseUseCase } from "@core/application/courses/usecases/get-course.usecase";
+import { UpdateCourseUseCase } from "@core/application/courses/usecases/update-course.usecase";
+import { DeleteCourseUseCase } from "@core/application/courses/usecases/delete-course.usecase";
 import { EnrollStudentUseCase } from "@core/application/courses/usecases/enroll-student.usecase";
 import { ListCourseStudentsUseCase } from "@core/application/courses/usecases/list-course-students.usecase";
 import { UnenrollStudentUseCase } from "@core/application/courses/usecases/unenroll-student.usecase";
@@ -22,6 +24,8 @@ import { UsersModule } from "../users/users.module";
     CreateCourseUseCase,
     ListCoursesUseCase,
     GetCourseUseCase,
+    UpdateCourseUseCase,
+    DeleteCourseUseCase,
     EnrollStudentUseCase,
     ListCourseStudentsUseCase,
     UnenrollStudentUseCase,

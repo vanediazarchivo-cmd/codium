@@ -135,6 +135,7 @@ export const testCasesApi = {
 // Submissions APIs
 export const submissionsApi = {
   list: () => ApiClient.get("/submissions/my-submissions"),
+  listUserSubmissions: () => ApiClient.get("/submissions/my-submissions"),
   get: (id: string) => ApiClient.get(`/submissions/${id}`),
   submit: (data: any) => ApiClient.post("/submissions", data),
 }
