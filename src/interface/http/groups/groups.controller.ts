@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from "@nestjs/swagger";
 import { CreateGroupUseCase } from "@core/application/groups/usecases/create-group.usecase";
 import { ListGroupsUseCase } from "@core/application/groups/usecases/list-groups.usecase";
 import { GetGroupUseCase } from "@core/application/groups/usecases/get-group.usecase";
+import { GetGroupByCourseAndNumberUseCase } from "@core/application/groups/usecases/get-group-by-course-and-number.usecase";
 import { UpdateGroupUseCase } from "@core/application/groups/usecases/update-group.usecase";
 import { DeleteGroupUseCase } from "@core/application/groups/usecases/delete-group.usecase";
 import { EnrollStudentToGroupUseCase } from "@core/application/groups/usecases/enroll-student-to-group.usecase";
@@ -20,6 +21,7 @@ export class GroupsController {
     private readonly createGroupUseCase: CreateGroupUseCase,
     private readonly listGroupsUseCase: ListGroupsUseCase,
     private readonly getGroupUseCase: GetGroupUseCase,
+    private readonly getGroupByCourseAndNumberUseCase: GetGroupByCourseAndNumberUseCase,
     private readonly updateGroupUseCase: UpdateGroupUseCase,
     private readonly deleteGroupUseCase: DeleteGroupUseCase,
     private readonly enrollStudentUseCase: EnrollStudentToGroupUseCase,
@@ -50,6 +52,15 @@ export class GroupsController {
   @ApiOperation({ summary: "Get group by ID" })
   async get(@Param("id") id: string) {
     return this.getGroupUseCase.execute(id);
+  }
+
+  @Get("course/:courseId/number/:number")
+  @ApiOperation({ summary: "Get group by course ID and group number" })
+  async getByNumber(
+    @Param("courseId") courseId: string,
+    @Param("number") number: string,
+  ) {
+    return this.getGroupByCourseAndNumberUseCase.execute(courseId, parseInt(number, 10));
   }
 
   @Patch(":id")

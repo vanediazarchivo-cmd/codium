@@ -27,7 +27,7 @@ export class ChallengeDto {
   status: ChallengeStatus
 
   @ApiProperty()
-  courseId: string
+  groupId: string
 
   @ApiProperty()
   createdBy: string

@@ -132,12 +132,12 @@ export const submissionsApi = {
 
 // Evaluations APIs
 export const evaluationsApi = {
-  list: (courseId?: string) => {
-    const query = courseId ? `?courseId=${courseId}` : ""
+  list: (groupId?: string) => {
+    const query = groupId ? `?groupId=${groupId}` : ""
     return ApiClient.get(`/evaluations${query}`)
   },
-  active: (courseId?: string) => {
-    const query = courseId ? `?courseId=${courseId}` : ""
+  active: (groupId?: string) => {
+    const query = groupId ? `?groupId=${groupId}` : ""
     return ApiClient.get(`/evaluations/active${query}`)
   },
   get: (id: string) => ApiClient.get(`/evaluations/${id}`),
@@ -170,6 +170,8 @@ export const usersApi = {
 export const groupsApi = {
   list: (courseId: string) => ApiClient.get(`/groups?courseId=${courseId}`),
   get: (id: string) => ApiClient.get(`/groups/${id}`),
+  getByNumber: (courseId: string, number: number) =>
+    ApiClient.get(`/groups/course/${courseId}/number/${number}`),
   create: (data: any) => ApiClient.post("/groups", data),
   update: (id: string, data: any) => ApiClient.patch(`/groups/${id}`, data),
   delete: (id: string) => ApiClient.delete(`/groups/${id}`),

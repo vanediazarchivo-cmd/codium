@@ -12,7 +12,7 @@ export class ChallengeMapper {
       timeLimit: challenge.timeLimit,
       memoryLimit: challenge.memoryLimit,
       status: challenge.status,
-      courseId: challenge.courseId,
+      groupId: challenge.groupId,
       createdBy: challenge.createdById,
       createdAt: challenge.createdAt,
       updatedAt: challenge.updatedAt,

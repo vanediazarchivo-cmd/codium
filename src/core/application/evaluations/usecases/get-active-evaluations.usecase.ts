@@ -12,12 +12,13 @@ export class GetActiveEvaluationsUseCase {
     private readonly evaluationRepository: EvaluationRepositoryPort,
   ) {}
 
-  async execute(courseId?: string): Promise<EvaluationDto[]> {
+  async execute(groupId?: string): Promise<EvaluationDto[]> {
     const now = new Date();
 
     let evaluations: Evaluation[] = [];
-    if (courseId) {
-      evaluations = await this.evaluationRepository.findByCourseId(courseId);
+
+    if (groupId) {
+      evaluations = await this.evaluationRepository.findByGroupId(groupId);
     } else {
       evaluations = await this.evaluationRepository.findAll();
     }

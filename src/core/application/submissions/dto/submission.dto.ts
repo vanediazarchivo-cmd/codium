@@ -11,7 +11,7 @@ export class SubmissionDto {
   studentId: string; // UUID of the user
   studentName: string; // enriched with user fullName from repository
   challengeId: string;
-  courseId: string;
+  groupId: string;
   language: string; // frontend-friendly language e.g. "Python", "C++"
   status: string; // e.g. ACCEPTED, WRONG_ANSWER, etc.
   score: number;

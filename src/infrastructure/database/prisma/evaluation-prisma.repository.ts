@@ -13,7 +13,7 @@ export class EvaluationPrismaRepository implements EvaluationRepositoryPort {
         id: evaluation.id,
         name: evaluation.name,
         description: evaluation.description,
-        courseId: evaluation.courseId,
+          groupId: evaluation.groupId,
         status: evaluation.status,
         startDate: evaluation.startDate,
         endDate: evaluation.endDate,
@@ -39,9 +39,9 @@ export class EvaluationPrismaRepository implements EvaluationRepositoryPort {
     return evaluation ? this.toDomain(evaluation) : null;
   }
 
-  async findByCourseId(courseId: string): Promise<Evaluation[]> {
+  async findByGroupId(groupId: string): Promise<Evaluation[]> {
     const evaluations = await this.prisma.evaluation.findMany({
-      where: { courseId },
+      where: { groupId },
       include: { challenges: true },
       orderBy: { startDate: "desc" },
     });
@@ -117,7 +117,7 @@ export class EvaluationPrismaRepository implements EvaluationRepositoryPort {
       id: prismaEvaluation.id,
       name: prismaEvaluation.name,
       description: prismaEvaluation.description,
-      courseId: prismaEvaluation.courseId,
+        groupId: prismaEvaluation.groupId,
       status: prismaEvaluation.status,
       startDate: prismaEvaluation.startDate,
       endDate: prismaEvaluation.endDate,

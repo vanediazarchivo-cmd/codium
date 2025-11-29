@@ -13,6 +13,8 @@ async function main() {
   await prisma.evaluation.deleteMany({});
   await prisma.testCase.deleteMany({});
   await prisma.challenge.deleteMany({});
+  await prisma.groupStudent.deleteMany({});
+  await prisma.group.deleteMany({});
   await prisma.courseStudent.deleteMany({});
   await prisma.course.deleteMany({});
   await prisma.user.deleteMany({});
@@ -34,8 +36,8 @@ async function main() {
     data: {
       email: "professor@codium.com",
       password: professorPassword,
-      firstName: "John",
-      lastName: "Doe",
+      firstName: "Juan",
+      lastName: "Profesor",
       role: "PROFESSOR",
     },
   });
@@ -45,8 +47,8 @@ async function main() {
     data: {
       email: "student1@codium.com",
       password: studentPassword,
-      firstName: "Alice",
-      lastName: "Smith",
+      firstName: "Carlos",
+      lastName: "Estudiante",
       role: "STUDENT",
     },
   });
@@ -55,28 +57,29 @@ async function main() {
     data: {
       email: "student2@codium.com",
       password: studentPassword,
-      firstName: "Bob",
-      lastName: "Johnson",
-      role: "STUDENT",
-    },
-  });
-
-  const student3 = await prisma.user.create({
-    data: {
-      email: "student3@codium.com",
-      password: studentPassword,
-      firstName: "Carlos",
+      firstName: "María",
       lastName: "López",
       role: "STUDENT",
     },
   });
 
-  // Create courses
-  const course1 = await prisma.course.create({
+  const student2 = await prisma.user.create({
     data: {
-      name: "Desarrollo de Aplicaciones Backend",
-      code: "NRC12345",
-      group: 1,
+      email: "student2@codium.com",
+      password: studentPassword,
+      firstName: "María",
+      lastName: "López",
+      role: "STUDENT",
+    },
+  });
+
+  console.log("✅ Users created");
+
+  // Create course
+  const course = await prisma.course.create({
+    data: {
+      name: "Programación Orientada a Objetos",
+      code: "POO-2025",
       semester: "2025-I",
       professors: {
         connect: { id: professor.id },
@@ -84,30 +87,40 @@ async function main() {
     },
   });
 
-  const course2 = await prisma.course.create({
+  console.log("✅ Course created");
+
+  // Create groups
+  const group1 = await prisma.group.create({
     data: {
-      name: "Algoritmos Avanzados",
-      code: "NRC12346",
-      group: 2,
-      semester: "2025-I",
-      professors: {
-        connect: { id: professor.id },
-      },
+      courseId: course.id,
+      number: 1,
+      name: "Grupo 01",
+      description: "Sección matutina",
     },
   });
 
-  // Enroll students
-  await prisma.courseStudent.createMany({
+  const group2 = await prisma.group.create({
+    data: {
+      courseId: course.id,
+      number: 2,
+      name: "Grupo 02",
+      description: "Sección vespertina",
+    },
+  });
+
+  console.log("✅ Groups created");
+
+  // Enroll students in groups
+  await prisma.groupStudent.createMany({
     data: [
-      { courseId: course1.id, studentId: student1.id },
-      { courseId: course1.id, studentId: student2.id },
-      { courseId: course1.id, studentId: student3.id },
-      { courseId: course2.id, studentId: student1.id },
-      { courseId: course2.id, studentId: student2.id },
+      { groupId: group1.id, studentId: student1.id },
+      { groupId: group1.id, studentId: student2.id },
     ],
   });
 
-  // Create challenges for course 1
+  console.log("✅ Students enrolled in groups");
+
+  // Create challenges for group 1
   const challenge1 = await prisma.challenge.create({
     data: {
       title: "Two Sum",
@@ -118,7 +131,7 @@ async function main() {
       timeLimit: 1500,
       memoryLimit: 256,
       status: "PUBLISHED",
-      courseId: course1.id,
+      groupId: group1.id,
       createdById: professor.id,
       testCases: {
         create: [
@@ -132,7 +145,7 @@ async function main() {
           {
             input: "[3,2,4]\n6",
             expectedOutput: "[1,2]",
-            isHidden: true,
+            isHidden: false,
             points: 50,
             order: 2,
           },
@@ -143,136 +156,29 @@ async function main() {
 
   const challenge2 = await prisma.challenge.create({
     data: {
-      title: "Búsqueda Binaria",
-      description: "Implementa búsqueda binaria en un arreglo ordenado.",
+      title: "Merge Sorted Array",
+      description: "Fusiona dos arreglos ordenados en uno solo.",
       difficulty: "EASY",
-      tags: ["búsqueda", "arrays"],
-      timeLimit: 1000,
-      memoryLimit: 128,
-      status: "PUBLISHED",
-      courseId: course1.id,
-      createdById: professor.id,
-      testCases: {
-        create: [
-          {
-            input: "[1,3,5,7,9]\n5",
-            expectedOutput: "2",
-            isHidden: false,
-            points: 50,
-            order: 1,
-          },
-          {
-            input: "[1,3,5,7,9]\n6",
-            expectedOutput: "-1",
-            isHidden: false,
-            points: 50,
-            order: 2,
-          },
-        ],
-      },
-    },
-  });
-
-  const challenge3 = await prisma.challenge.create({
-    data: {
-      title: "Quicksort",
-      description: "Implementa el algoritmo de ordenamiento Quicksort.",
-      difficulty: "MEDIUM",
-      tags: ["ordenamiento", "algoritmos"],
+      tags: ["arrays", "merge"],
       timeLimit: 2000,
       memoryLimit: 256,
       status: "PUBLISHED",
-      courseId: course1.id,
+      groupId: group1.id,
       createdById: professor.id,
       testCases: {
         create: [
           {
-            input: "[64,34,25,12,22,11,90]",
-            expectedOutput: "[11,12,22,25,34,64,90]",
+            input: "[1,2,3]\n[2,5,6]",
+            expectedOutput: "[1,2,2,3,5,6]",
             isHidden: false,
-            points: 100,
+            points: 50,
             order: 1,
           },
-        ],
-      },
-    },
-  });
-
-  // Create challenges for course 2
-  const challenge4 = await prisma.challenge.create({
-    data: {
-      title: "Dijkstra",
-      description: "Implementa el algoritmo de Dijkstra para encontrar el camino más corto.",
-      difficulty: "HARD",
-      tags: ["grafos", "algoritmos", "dijkstra"],
-      timeLimit: 3000,
-      memoryLimit: 512,
-      status: "PUBLISHED",
-      courseId: course2.id,
-      createdById: professor.id,
-      testCases: {
-        create: [
           {
-            input: "6\n0 1 4\n0 2 2\n1 3 5\n2 3 8\n3 5 2\n4 5 10\n0\n5",
-            expectedOutput: "10",
+            input: "[0]\n[0]",
+            expectedOutput: "[0,0]",
             isHidden: false,
-            points: 100,
-            order: 1,
-          },
-        ],
-      },
-    },
-  });
-
-  // Create sample submissions
-  const now = new Date();
-  const submission1 = await prisma.submission.create({
-    data: {
-      userId: student1.id,
-      challengeId: challenge1.id,
-      courseId: course1.id,
-      code: "def twoSum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []\n",
-      language: "PYTHON",
-      status: "ACCEPTED",
-      score: 100,
-      timeMsTotal: 450,
-      memoryUsedMb: 45,
-      createdAt: new Date(now.getTime() - 86400000),
-    },
-  });
-
-  const submission2 = await prisma.submission.create({
-    data: {
-      userId: student2.id,
-      challengeId: challenge1.id,
-      courseId: course1.id,
-      code: "int[] twoSum(int[] nums, int target) {\n    Map<Integer, Integer> map = new HashMap<>();\n    for (int i = 0; i < nums.length; i++) {\n        int complement = target - nums[i];\n        if (map.containsKey(complement)) {\n            return new int[]{map.get(complement), i};\n        }\n        map.put(nums[i], i);\n    }\n    return new int[]{};\n}\n",
-      language: "JAVA",
-      status: "WRONG_ANSWER",
-      score: 50,
-      timeMsTotal: 320,
-      memoryUsedMb: 62,
-      createdAt: new Date(now.getTime() - 86400000),
-    },
-  });
-
-  // Create evaluation
-  const evaluation1 = await prisma.evaluation.create({
-    data: {
-      name: "Examen Parcial 1",
-      description: "Evaluación sobre estructura de datos y algoritmos básicos",
-      courseId: course1.id,
-      status: "PUBLISHED",
-      startDate: new Date(now.getTime() - 3600000),
-      endDate: new Date(now.getTime() + 86400000),
-      challenges: {
-        create: [
-          {
-            challengeId: challenge1.id,
-            order: 1,
-          },
-          {
-            challengeId: challenge2.id,
+            points: 50,
             order: 2,
           },
         ],
@@ -280,39 +186,82 @@ async function main() {
     },
   });
 
-  const evaluation2 = await prisma.evaluation.create({
+  console.log("✅ Challenges created");
+
+  // Create evaluation
+  const evaluation = await prisma.evaluation.create({
     data: {
-      name: "Examen Final",
-      description: "Evaluación final de algoritmos avanzados",
-      courseId: course2.id,
-      status: "DRAFT",
-      startDate: new Date(now.getTime() + 604800000),
-      endDate: new Date(now.getTime() + 691200000),
-      challenges: {
-        create: [
-          {
-            challengeId: challenge4.id,
-            order: 1,
-          },
-        ],
-      },
+      name: "Parcial 1",
+      description: "Primera evaluación del semestre",
+      groupId: group1.id,
+      status: "PUBLISHED",
+      startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // Yesterday
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // In 7 days
     },
   });
 
-  console.log("✅ Database seeded successfully!");
-  console.log("\n📋 Credenciales de prueba:");
-  console.log("👤 Admin:     admin@codium.com / admin123");
-  console.log("👨‍🏫 Profesor:   professor@codium.com / professor123");
-  console.log("👨‍🎓 Estudiante: student1@codium.com / student123");
-  console.log("              student2@codium.com / student123");
-  console.log("              student3@codium.com / student123");
-  console.log("\n📊 Datos creados:");
-  console.log(`✓ ${3} usuarios: 1 admin, 1 profesor, 3 estudiantes`);
-  console.log(`✓ ${2} cursos con ${5} inscripciones`);
-  console.log(`✓ ${4} retos publicados`);
-  console.log(`✓ ${2} evaluaciones`);
-  console.log(`✓ ${2} submissions de ejemplo`);
-}
+  // Add challenges to evaluation
+  await prisma.evaluationChallenge.createMany({
+    data: [
+      { evaluationId: evaluation.id, challengeId: challenge1.id, order: 1 },
+      { evaluationId: evaluation.id, challengeId: challenge2.id, order: 2 },
+    ],
+  });
+
+  console.log("✅ Evaluation created");
+
+  // Create submission example
+  const submission = await prisma.submission.create({
+    data: {
+      userId: student1.id,
+      challengeId: challenge1.id,
+      groupId: group1.id,
+      evaluationId: evaluation.id,
+      code: "def twoSum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []",
+      language: "PYTHON",
+      status: "ACCEPTED",
+      score: 100,
+      timeMsTotal: 120,
+      memoryUsedMb: 45.5,
+    },
+  });
+
+  // Get test cases and add results
+  const testCases = await prisma.testCase.findMany({
+    where: { challengeId: challenge1.id },
+  });
+
+  await prisma.testCaseResult.createMany({
+    data: testCases.map((tc, idx) => ({
+      submissionId: submission.id,
+      testCaseId: tc.id,
+      status: "PASS",
+      timeMs: 60,
+      memoryMb: 22.5 + idx * 0.5,
+      output: idx === 0 ? "[0,1]" : "[1,2]",
+    })),
+  });
+
+  console.log("✅ Submission example created");
+
+  // Create more submissions for leaderboard
+  for (let i = 0; i < 5; i++) {
+    await prisma.submission.create({
+      data: {
+        userId: i % 2 === 0 ? student1.id : student2.id,
+        challengeId: challenge1.id,
+        groupId: group1.id,
+        code: "def solution():\n    pass",
+        language: "PYTHON",
+        status: "ACCEPTED",
+        score: 100 - i * 10,
+        timeMsTotal: 150 + i * 50,
+        memoryUsedMb: 50,
+      },
+    });
+  }
+
+  console.log("✨ Database seeded successfully!");
 
 main()
   .catch((e) => {

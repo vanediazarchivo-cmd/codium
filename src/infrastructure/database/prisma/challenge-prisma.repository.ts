@@ -18,7 +18,7 @@ export class ChallengePrismaRepository implements ChallengeRepositoryPort {
         timeLimit: challenge.timeLimit,
         memoryLimit: challenge.memoryLimit,
         status: challenge.status,
-        courseId: challenge.courseId,
+        groupId: challenge.groupId,
         createdById: challenge.createdById,
         createdAt: challenge.createdAt,
         updatedAt: challenge.updatedAt,
@@ -37,8 +37,8 @@ export class ChallengePrismaRepository implements ChallengeRepositoryPort {
     return challenges.map(this.toDomain);
   }
 
-  async findByCourseId(courseId: string): Promise<Challenge[]> {
-    const challenges = await this.prisma.challenge.findMany({ where: { courseId } });
+  async findByGroupId(groupId: string): Promise<Challenge[]> {
+    const challenges = await this.prisma.challenge.findMany({ where: { groupId } });
     return challenges.map(this.toDomain);
   }
 
@@ -66,7 +66,7 @@ export class ChallengePrismaRepository implements ChallengeRepositoryPort {
       timeLimit: prismaChallenge.timeLimit,
       memoryLimit: prismaChallenge.memoryLimit,
       status: prismaChallenge.status as ChallengeStatus,
-      courseId: prismaChallenge.courseId,
+      groupId: prismaChallenge.groupId,
       createdById: prismaChallenge.createdById,
       createdAt: prismaChallenge.createdAt,
       updatedAt: prismaChallenge.updatedAt,

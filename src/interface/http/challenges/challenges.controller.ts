@@ -32,8 +32,8 @@ export class ChallengesController {
 
   @Get()
   @ApiOperation({ summary: "List all challenges" })
-  async list(@CurrentUser() user: any, @Query('courseId') courseId?: string) {
-    return this.listChallengesUseCase.execute(user.role, courseId);
+  async list(@CurrentUser() user: any, @Query('groupId') groupId?: string) {
+    return this.listChallengesUseCase.execute(user.role, groupId);
   }
 
   @Get(":id")

@@ -12,7 +12,7 @@ export class SubmissionPrismaRepository implements SubmissionRepositoryPort {
       id: submission.id,
       userId: submission.userId,
       challengeId: submission.challengeId,
-      courseId: submission.courseId,
+      groupId: submission.groupId,
       code: submission.code,
       language: submission.language,
       status: submission.status,
@@ -56,9 +56,9 @@ export class SubmissionPrismaRepository implements SubmissionRepositoryPort {
     return submissions.map(s => this.toDomain(s));
   }
   
-  async findByCourseId(courseId: string): Promise<Submission[]> {
+  async findByGroupId(groupId: string): Promise<Submission[]> {
     const submissions = await this.prisma.submission.findMany({
-        where: { courseId },
+        where: { groupId },
         orderBy: { createdAt: "desc" },
         include: { results: true },
     });
@@ -119,7 +119,7 @@ export class SubmissionPrismaRepository implements SubmissionRepositoryPort {
       id: prismaSubmission.id,
       userId: prismaSubmission.userId,
       challengeId: prismaSubmission.challengeId,
-      courseId: prismaSubmission.courseId,
+      groupId: prismaSubmission.groupId,
       evaluationId: prismaSubmission.evaluationId || undefined,
       code: prismaSubmission.code,
       language: prismaSubmission.language as Language,

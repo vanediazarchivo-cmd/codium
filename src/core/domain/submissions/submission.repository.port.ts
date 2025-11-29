@@ -5,7 +5,7 @@ export interface SubmissionRepositoryPort {
   findById(id: string): Promise<Submission | null>;
   findByUserId(userId: string): Promise<Submission[]>;
   findByChallengeId(challengeId: string): Promise<Submission[]>;
-  findByCourseId(courseId: string): Promise<Submission[]>;
+  findByGroupId(groupId: string): Promise<Submission[]>;
   update(id: string, data: Partial<Submission>): Promise<Submission>;
   updateStatus(id: string, status: SubmissionStatus, results?: any): Promise<Submission>;
 }

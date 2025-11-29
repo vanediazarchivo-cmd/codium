@@ -69,7 +69,7 @@ export class SubmissionMapper {
       studentId: entity.userId,
       studentName,
       challengeId: entity.challengeId,
-      courseId: entity.courseId,
+      groupId: entity.groupId,
       language: mapLanguage(entity.language),
       status: dtoStatus,
       score: entity.score,

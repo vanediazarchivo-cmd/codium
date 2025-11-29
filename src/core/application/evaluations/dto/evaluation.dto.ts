@@ -12,7 +12,7 @@ export class EvaluationDto {
   description?: string;
 
   @ApiProperty()
-  courseId: string;
+  groupId: string;
 
   @ApiProperty({ enum: EvaluationStatus })
   status: EvaluationStatus;

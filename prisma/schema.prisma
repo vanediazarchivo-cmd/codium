@@ -82,7 +82,8 @@ model Course {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  professors User[]       @relation("CourseProfessors")
+  professors User[]           @relation("CourseProfessors")
+  students   CourseStudent[]
   groups     Group[]
   createdBy  String? // Profesor que creó el curso
 

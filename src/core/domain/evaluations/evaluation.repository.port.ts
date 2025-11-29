@@ -3,7 +3,7 @@ import { Evaluation } from "./evaluation.entity";
 export interface EvaluationRepositoryPort {
   create(evaluation: Evaluation, challengeIds: string[]): Promise<Evaluation>;
   findById(id: string): Promise<Evaluation | null>;
-  findByCourseId(courseId: string): Promise<Evaluation[]>;
+  findByGroupId(groupId: string): Promise<Evaluation[]>;
   findAll(): Promise<Evaluation[]>;
   update(id: string, data: Partial<Evaluation>): Promise<Evaluation>;
   delete(id: string): Promise<void>;

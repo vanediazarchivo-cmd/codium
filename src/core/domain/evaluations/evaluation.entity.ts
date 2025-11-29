@@ -8,7 +8,7 @@ interface EvaluationProps {
   id: string;
   name: string;
   description?: string;
-  courseId: string;
+  groupId: string;
   status: EvaluationStatus;
   startDate: Date;
   endDate: Date;
@@ -21,7 +21,7 @@ export class Evaluation {
   public readonly id: string;
   public readonly name: string;
   public readonly description?: string;
-  public readonly courseId: string;
+  public readonly groupId: string;
   public readonly status: EvaluationStatus;
   public readonly startDate: Date;
   public readonly endDate: Date;
@@ -33,7 +33,7 @@ export class Evaluation {
     this.id = props.id;
     this.name = props.name;
     this.description = props.description;
-    this.courseId = props.courseId;
+    this.groupId = props.groupId;
     this.status = props.status;
     this.startDate = props.startDate;
     this.endDate = props.endDate;

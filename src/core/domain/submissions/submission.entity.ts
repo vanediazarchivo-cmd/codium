@@ -28,7 +28,7 @@ interface SubmissionProps {
   id: string;
   userId: string;
   challengeId: string;
-  courseId: string;
+  groupId: string;
   evaluationId?: string | null;
   code: string;
   language: Language;
@@ -45,7 +45,7 @@ export class Submission {
   public readonly id: string;
   public readonly userId: string;
   public readonly challengeId: string;
-  public readonly courseId: string;
+  public readonly groupId: string;
   public readonly evaluationId?: string | null;
   public readonly code: string;
   public readonly language: Language;
@@ -61,7 +61,7 @@ export class Submission {
     this.id = props.id;
     this.userId = props.userId;
     this.challengeId = props.challengeId;
-    this.courseId = props.courseId;
+    this.groupId = props.groupId;
     this.evaluationId = props.evaluationId || undefined;
     this.code = props.code;
     this.language = props.language;

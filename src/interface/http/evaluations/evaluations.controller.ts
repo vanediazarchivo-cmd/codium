@@ -37,17 +37,17 @@ export class EvaluationsController {
   }
 
   @Get()
-  @ApiOperation({ summary: "List all evaluations (filtered by course)" })
+  @ApiOperation({ summary: "List all evaluations (filtered by group)" })
   @ApiResponse({ status: 200, description: "List of evaluations" })
-  async list(@Query("courseId") courseId?: string) {
-    return this.listEvaluationsUseCase.execute(courseId);
+  async list(@Query("groupId") groupId?: string) {
+    return this.listEvaluationsUseCase.execute(groupId);
   }
 
   @Get("active")
   @ApiOperation({ summary: "Get currently active evaluations" })
   @ApiResponse({ status: 200, description: "List of active evaluations" })
-  async getActive(@Query("courseId") courseId?: string) {
-    return this.getActiveEvaluationsUseCase.execute(courseId);
+  async getActive(@Query("groupId") groupId?: string) {
+    return this.getActiveEvaluationsUseCase.execute(groupId);
   }
 
   @Get(":id")

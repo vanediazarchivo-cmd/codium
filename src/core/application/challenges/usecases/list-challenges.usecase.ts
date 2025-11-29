@@ -12,11 +12,11 @@ export class ListChallengesUseCase {
     private readonly challengeRepository: ChallengeRepositoryPort,
   ) {}
 
-  async execute(userRole: UserRole, courseId?: string): Promise<ChallengeDto[]> {
+  async execute(userRole: UserRole, groupId?: string): Promise<ChallengeDto[]> {
     let challenges;
 
-    if (courseId) {
-      challenges = await this.challengeRepository.findByCourseId(courseId);
+    if (groupId) {
+      challenges = await this.challengeRepository.findByGroupId(groupId);
     } else {
       challenges = await this.challengeRepository.findAll();
     }

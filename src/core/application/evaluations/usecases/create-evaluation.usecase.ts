@@ -25,7 +25,7 @@ export class CreateEvaluationUseCase {
       id: uuidv4(),
       name: dto.name,
       description: dto.description,
-      courseId: dto.courseId,
+      groupId: dto.groupId,
       status: EvaluationStatus.DRAFT,
       startDate,
       endDate,

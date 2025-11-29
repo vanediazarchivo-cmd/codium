@@ -19,7 +19,7 @@ interface ChallengeProps {
   timeLimit: number;
   memoryLimit: number;
   status: ChallengeStatus;
-  courseId: string;
+  groupId: string;
   createdById: string;
   createdAt: Date;
   updatedAt: Date;
@@ -34,7 +34,7 @@ export class Challenge {
   public readonly timeLimit: number;
   public readonly memoryLimit: number;
   public readonly status: ChallengeStatus;
-  public readonly courseId: string;
+  public readonly groupId: string;
   public readonly createdById: string;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
@@ -48,7 +48,7 @@ export class Challenge {
     this.timeLimit = props.timeLimit;
     this.memoryLimit = props.memoryLimit;
     this.status = props.status;
-    this.courseId = props.courseId;
+    this.groupId = props.groupId;
     this.createdById = props.createdById;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;

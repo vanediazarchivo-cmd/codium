@@ -7,7 +7,7 @@ export class EvaluationMapper {
       id: entity.id,
       name: entity.name,
       description: entity.description,
-      courseId: entity.courseId,
+      groupId: entity.groupId,
       status: entity.status,
       startDate: entity.startDate,
       endDate: entity.endDate,

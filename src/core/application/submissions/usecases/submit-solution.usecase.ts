@@ -64,7 +64,7 @@ export class SubmitSolutionUseCase {
       id: uuidv4(),
       userId: userId,
       challengeId: dto.challengeId,
-      courseId: dto.courseId,
+      groupId: dto.groupId,
       code: dto.code,
       language: normalizedLanguage,
       status: SubmissionStatus.QUEUED,
